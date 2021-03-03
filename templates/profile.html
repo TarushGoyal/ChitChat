@@ -1,0 +1,21 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  Welcome, {{ name }}!
+  <br>Your DMs are:
+</h1>
+{% for i in dms:%}
+	<p>person {{i}}</p>
+{% endfor %}
+<script>
+console.log("hello");
+fetch('/users')
+  .then(function (response) {
+      	console.log(response.json());
+  })
+</script>
+
+{% endblock %}
