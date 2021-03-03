@@ -12,7 +12,7 @@
 
 	$source env/bin/activate
 
-	you can check that virtual environemnt is started by doing :
+	&you can check that virtual environemnt is started by doing :
 
 	$which python3
 
@@ -27,9 +27,9 @@
 6) Initialize the app
 
 	$python3 
-	_from ChitChat import db, create_app_
-	_db.create_all(app=create_app())_ # ignore warnings
-	_exit()_
+	&_from ChitChat import db, create_app_
+	&_db.create_all(app=create_app())_ # ignore warnings
+	&_exit()_
 
 7) Now you are ready to start the server
 
@@ -51,6 +51,6 @@
 
 2) $sqlite3
 		sqlite> .open db.sqlite
-		sqlite> .tables 
+		&sqlite> .tables 
 
 3) rest is same as postgres.
