@@ -27,9 +27,9 @@
 6) Initialize the app
 
 	$python3 
-	>>> from ChitChat import db, create_app
-	>>> db.create_all(app=create_app()) # ignore warnings
-	>>> exit()
+	_from ChitChat import db, create_app_
+	_db.create_all(app=create_app())_ # ignore warnings
+	_exit()_
 
 7) Now you are ready to start the server
 
