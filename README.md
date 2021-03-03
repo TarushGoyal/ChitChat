@@ -29,7 +29,7 @@
 	$python3 \
 	_from ChitChat import db, create_app_\
 	_db.create_all(app=create_app())_ # ignore warnings\
-	_exit()_\
+	_exit()_
 
 7) Now you are ready to start the server
 
@@ -49,7 +49,7 @@
 
 1) $cd ChitChat
 
-2) $sqlite3
+2) $sqlite3\
 		sqlite> .open db.sqlite\
 		sqlite> .tables 
 
