@@ -5,13 +5,17 @@
 {% block content %}
 <h1 class="title">
   Welcome, {{ name }}!
-  <br>Your DMs are:
 </h1>
+<h2> Your DMs are: </h2>
 {% for i in dms:%}
 	<p>person {{i}}</p>
 {% endfor %}
+<h2> Your Servers are: </h2>
+{% for i in servers:%}
+	<p> {{i}}</p>
+{% endfor %}
+
 <script>
-console.log("hello");
 fetch('/users')
   .then(function (response) {
       	console.log(response.json());

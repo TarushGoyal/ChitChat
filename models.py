@@ -10,9 +10,9 @@ class User(UserMixin, db.Model):
 	password = db.Column(db.String(100))
 	name = db.Column(db.String(1000))
 
-class Profile(db.Model):
-	__tablename__ = "Profile"
-# 
+# class Profile(db.Model):
+# 	__tablename__ = "Profile"
+# #
 
 class DM(db.Model):
 	__tablename__ = "DM"
@@ -20,10 +20,11 @@ class DM(db.Model):
 	id2 = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key=True)
 
 class Server(db.Model):
-	__tablename__ = "Server"
-	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(1000))
-	created_at = db.Column(db.DateTime)
+    __tablename__ = "Server"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(1000))
+    created_at = db.Column(db.DateTime)
+    public = db.Column(db.Boolean)
 
 class ServerUser(db.Model):
 	__tablename__ = "ServerUser"
@@ -44,8 +45,9 @@ class Channel(db.Model):
 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'), primary_key = True)
 
 class ChannelUser(db.Model):
-	__tablename__ = "ChannelUser"
-# 
+    __tablename__ = "ChannelUser"
+    channel_id = db.Column(db.Integer, db.ForeignKey('Channel.id'), primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True)
 
 class Message(db.Model):
 	__tablename__ = "Message"
@@ -62,4 +64,3 @@ class React(db.Model):
 	react_type = db.Column(db.String)
 	reacted_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
 	reacted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
-
