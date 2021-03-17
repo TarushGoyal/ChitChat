@@ -13,15 +13,15 @@ def index():
 @main.route('/profile')
 @login_required
 def profile():
-    dms1 = [i for i in User.query.join(DM, User.id == DM.id2).filter(DM.id1==current_user.id).all()]
-    dms2 = [i for i in User.query.join(DM, User.id == DM.id1).filter(DM.id2==current_user.id).all()]
-    servers = [i for i in Server.query.join(ServerUser).filter(ServerUser.user_id == current_user.id).all()]
-    return render_template('profile.html', name=current_user.name, dms = dms1 + dms2, servers=servers)
+    # dms1 = [i for i in User.query.join(DM, User.id == DM.id2).filter(DM.id1==current_user.id).all()]
+    # dms2 = [i for i in User.query.join(DM, User.id == DM.id1).filter(DM.id2==current_user.id).all()]
+    # servers = [i for i in Server.query.join(ServerUser).filter(ServerUser.user_id == current_user.id).all()]
+    servers = current_user.get_servers()
+    return render_template('profile.html', name=current_user.name, servers=servers)
 
 @main.route('/users')
-@login_required
 def users():
-	data = [i.id for i in User.query.all()]
+	data = [i.id for i in User.get_all()]
 	return {
 		"data" : data
 	}

@@ -10,6 +10,11 @@ class User(UserMixin, db.Model):
 	email = db.Column(db.String(100), unique=True)
 	password = db.Column(db.String(100))
 	name = db.Column(db.String(1000))
+	def get_servers(self):
+		return Server.query.join(ServerUser).filter(ServerUser.user_id == id).all()
+	@classmethod
+	def get_all(cls):
+		return db.engine.execute('''SELECT * FROM User''')
 
 class DM(db.Model):
 	__tablename__ = "DM"
@@ -62,3 +67,4 @@ class React(db.Model):
 	react_type = db.Column(db.String(10))
 	reacted_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
 	reacted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+
