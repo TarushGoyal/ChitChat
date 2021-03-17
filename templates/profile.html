@@ -8,11 +8,11 @@
 </h1>
 <h2> Your DMs are: </h2>
 {% for i in dms:%}
-	<p>person {{i}}</p>
+	<a href = "/dm/{{i.id}}">{{i.name}}</a>
 {% endfor %}
 <h2> Your Servers are: </h2>
 {% for i in servers:%}
-	<p> {{i}}</p>
+	<a href="/server/{{i.id}}"> {{i.name}}</a>
 {% endfor %}
 
 <script>

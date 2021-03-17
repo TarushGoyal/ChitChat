@@ -1,0 +1,18 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>
+  Welcome to Server {{ server.name }}!
+</h1>
+<h2> Server members are: </h2>
+{% for i in members:%}
+	<a href="/user/{{i.id}}"> {{i.name}}</a><br>
+{% endfor %}
+
+<h2> Channels: </h2>
+{% for i in channels:%}
+	<a href = "/channel/{{i.id}}">{{i.name}}</a><br>
+{% endfor %}
+{% endblock %}

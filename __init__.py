@@ -4,9 +4,10 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy, event
 from flask_login import LoginManager
 from flask_restful import Api
+from flask_socketio import SocketIO, emit
 
-# init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
+socketIO = SocketIO()
 
 def create_app():
     app = Flask(__name__)
@@ -15,6 +16,10 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
+
+    socketIO.init_app(app)
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
@@ -31,5 +36,12 @@ def create_app():
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
+
+    from .events import chat
+    # @socketIO.on('send chat')
+    # def chat(json, methods=['GET', 'POST']):
+    #     print('received my event: ' + str(json))
+    #     json['username'] = "Thinking..."
+    #     socketIO.emit('add chat', json)
 
     return app

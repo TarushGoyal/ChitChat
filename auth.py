@@ -3,8 +3,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
-from .models import User, Server, ServerUser
-from . import db
+from .models import *
 
 auth = Blueprint('auth', __name__)
 
@@ -39,12 +38,15 @@ def signup_post():
         return redirect(url_for('auth.signup'))
     new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
     public_servers = Server.query.filter_by(public=True).all()
-    print("-------",[i.id for i in public_servers])
     db.session.add(new_user)
-    db.session.commit()
+    db.session.flush()
     for server in public_servers:
         server_user = ServerUser(user_id = new_user.id, server_id = server.id)
         db.session.add(server_user)
+    public_channels = Channel.query.join(Server).filter(Server.public == True).all()
+    for channel in public_channels:
+        channel_user = ChannelUser(user_id = new_user.id, channel_id = channel.id)
+        db.session.add(channel_user)
     db.session.commit()
     return redirect(url_for('auth.login'))
 

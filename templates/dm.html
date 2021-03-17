@@ -1,0 +1,41 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column info">
+  <div class="top" style="background-color:#2f3136">
+    <h5> find or start a conversation </h5>
+  </div>
+  <h2 style="color:#dcddde">Direct Messages</h2>
+  <p>Some text..</p>
+</div>
+<div class="column content" onLoad="window.scroll(0, 150)">
+  <div class="top" style="background-color:#36393f">
+    <h3> # Friends </h3>
+  </div>
+  <h2> Chats </h2>
+  {% for i in range(10): %}
+  <div class="message">
+    <p>
+      This is a message in hemlo app
+    </p>
+  </div>
+  {% endfor %}
+  
+  <form action="" method="post">
+  	<input type="text" name="chat"><br>
+    <input type="submit" name="upvote" value="Upvote" />
+  </form>
+
+
+</div>
+
+</body>
+<!-- <script type="text/javascript">
+  document.querySelector('.content').scrollTop = document.querySelector('.content').scrollHeight;
+</script> -->
+
+
+{% endblock %}
+`
