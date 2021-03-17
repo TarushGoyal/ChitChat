@@ -26,18 +26,6 @@ def users():
 		"data" : data
 	}
 
-@main.route('/dm/<id>')
-@login_required
-def dm(id):
-	return render_template('dm.html',id = id)
-
-@main.route('/dm/<id>', methods=['POST'])
-@login_required
-def dm_post(id):
-	chat = request.form.get('chat')
-	message = Message()
-	return render_template('dm.html', id = id)
-
 @main.route('/server/<id>')
 @login_required
 def server(id):
