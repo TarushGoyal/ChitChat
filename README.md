@@ -1,5 +1,5 @@
-# ChitChat / Hemlo
-## real time chatting and communication
+# ChitChat / Hemlo [Name still under consideration]
+## Real-time chatting and communication
 
 ### First Timers:
 
@@ -10,7 +10,7 @@
 
 3) start the virtual environment using :
 
-	$source env/bin/activate\
+	$source env/bin/activate
 
 	you can check that virtual environemnt is started by doing :
 
@@ -22,7 +22,7 @@
 
 5) Now set environment variable FLASK_APP 
 
-	#export FLASK_APP=ChitChat
+	$export FLASK_APP=ChitChat
 
 6) Initialize the app
 
@@ -37,11 +37,11 @@
 
 ### Constributors:
 
-1) if you are making a "discussed" change (approved by other members and known to work for sure) then directly commit on the master branch.
+1) If you are making a "discussed" change (approved by other members and known to work for sure) then directly commit on the master branch.
 
 2) If you are experimenting with a feature / implementing a long shot feature make your own branch and only when it is tested merge with master branch.
 
-3) preferable branch name = featureName_myName eg. invitation_anuj
+3) Preferable branch name = featureName_myName eg. invitation_anuj
 
 4) **Do not push env / database**
 
@@ -53,4 +53,4 @@
 		sqlite> .open db.sqlite\
 		sqlite> .tables 
 
-3) rest is same as postgres.
+3) Rest is same as postgres.
