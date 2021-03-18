@@ -103,18 +103,6 @@ class Message(db.Model):
 	reply_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
 	def delete_message(self):
 		self.deleted = True
-	def react_yes(self):
-		l = list(db.engine.execute('''SELECT react_type FROM React WHERE React.reacted_to = :id''', {'id':self.id}))
-		if l[0] == 'yes':
-			db.engine.execute('''DELETE FROM React WHERE reacted_to = :id''', {'id':self.id})
-		elif l[0] == 'no':
-			db.engine.execute('''UPDATE React SET react_type = 'yes' WHERE reacted_to = :id''', {'id':self.id})
-	def react_no(self):
-		l = list(db.engine.execute('''SELECT react_type FROM React WHERE React.reacted_to = :id''', {'id':self.id}))
-		if l[0] == 'no':
-			db.engine.execute('''DELETE FROM React WHERE reacted_to = :id''', {'id':self.id})
-		elif l[0] == 'yes':
-			db.engine.execute('''UPDATE React SET react_type = 'no' WHERE reacted_to = :id''', {'id':self.id})
 
 class React(db.Model):
 	__tablename__ = "React"
