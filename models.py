@@ -1,5 +1,95 @@
 # models.py
 
+# from flask_login import UserMixin
+# from flask_sqlalchemy import SQLAlchemy, event
+# from . import db
+
+# class User(db.Model):
+# 	__tablename__ = 'User'
+# 	id = db.Column(db.Integer, primary_key = True, nullable = False)
+# 	type = db.Column(db.String(10), nullable = False)
+# 	name = db.Column(db.String(100))
+
+# class Human(UserMixin, db.Model):
+# 	__tablename__ = 'Human'
+# 	id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True, nullable = False)
+# 	email = db.Column(db.String(100), unique = True, nullable = False)
+# 	password = db.Column(db.String(100))
+# 	bio = db.Column(db.String(100))
+# 	dp = db.Column(db.String(500), default = '')
+# 	gender = db.Column(db.String(10))
+# 	join_date = db.Column(db.DateTime)
+
+# class Bot(db.Model):
+# 	__tablename__ = 'Bot'
+# 	id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True, nullable = False)
+# 	script = db.Column(db.String(1000))
+# 	creator = db.Column(db.Integer, db.ForeignKey('Human.id'), nullable = False)
+
+# class Server(db.Model):
+# 	__tablename__ = 'Server'
+# 	id = db.Column(db.Integer, primary_key = True, nullable = False)
+# 	name = db.Column(db.String(100))
+# 	dp = db.Column(db.String(500), default = '')
+# 	created_at = db.Column(db.DateTime)
+# 	description = db.Column(db.String(1000))
+
+# class ServerUser(db.Model):
+# 	__tablename__ = 'ServerUser'
+# 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'), primary_key = True)
+# 	user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True)
+# 	role = db.Column(db.String(20))		 # 'Creator', 'Admin', 'Member'
+
+# class Invitation(db.Model):
+# 	__tablename__ = 'Invitation'
+# 	id = db.Column(db.Integer, primary_key = True, nullable = False)
+# 	server_id = db.Column(db.Integer, db.ForeignKey(Server.id))
+# 	user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+# 	description = db.Column(db.String(1000))
+# 	channel_role = db.Column(db.String(20), default = 'Participant')
+# 	hidden = db.Column(db.Boolean, default = False)
+# 	accepted = db.Column(db.Boolean, default = False)
+
+# class Channel(db.Model):
+# 	__tablename__ = 'Channel'
+# 	id = db.Column(db.Integer, primary_key = True, nullable = False)
+# 	description = db.Column(db.String(1000))
+# 	name = db.Column(db.String(100))
+# 	created_at = db.Column(db.DateTime)
+# 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'), nullable = False)
+# 	open = db.Column(db.Boolean, default = False)
+
+# class ChannelUser(db.Model):
+#     __tablename__ = "ChannelUser"
+#     channel_id = db.Column(db.Integer, db.ForeignKey('Channel.id'), primary_key = True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True)
+#     role = db.Column(db.String(20))		 # 'Creator', 'Admin', 'Participant', 'Spectator'
+
+# class Message(db.Model):
+# 	__tablename__ = "Message"
+# 	id = db.Column(db.Integer, primary_key = True, nullable = False)
+# 	type = db.Column(db.String(10), nullable = False)
+# 	content = db.Column(db.String(10000))
+# 	link = db.Column(db.String(200))
+# 	timestamp = db.Column(db.DateTime)
+# 	deleted = db.Column(db.Boolean, default = False)
+# 	posted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+# 	posted_by_name = db.Column(db.String(100))
+# 	posted_in = db.Column(db.Integer, db.ForeignKey('Channel.id'))
+# 	reply_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
+# 	def delete_message(self):
+# 		self.deleted = True
+
+# class React(db.Model):
+# 	__tablename__ = "React"
+# 	id = db.Column(db.Integer, primary_key = True, nullable = False)
+# 	react_type = db.Column(db.String(10))
+# 	reacted_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
+# 	reacted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+# 	reacted_at = db.Column(db.DateTime)
+
+
+
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy, event
 from . import db
