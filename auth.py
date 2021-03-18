@@ -37,13 +37,13 @@ def signup_post():
         flash('Email address already exists')
         return redirect(url_for('auth.signup'))
     new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
-    public_servers = Server.query.filter_by(public=True).all()
+    public_servers = Server.get_public_servers()
     db.session.add(new_user)
     db.session.flush()
     for server in public_servers:
         server_user = ServerUser(user_id = new_user.id, server_id = server.id)
         db.session.add(server_user)
-    public_channels = Channel.query.join(Server).filter(Server.public == True).all()
+    public_channels = Channel.get_public_channels()
     for channel in public_channels:
         channel_user = ChannelUser(user_id = new_user.id, channel_id = channel.id)
         db.session.add(channel_user)
