@@ -12,9 +12,15 @@ class User(UserMixin, db.Model):
 	name = db.Column(db.String(1000))
 	def get_servers(self):
 		return Server.query.join(ServerUser).filter(ServerUser.user_id == self.id).all()
+	def assign_role(self, server_id, role):
+		db.engine.execute('''UPDATE ServerUser SET role = :r WHERE server_id = :s AND user_id = :id''', {'r':role, 's':server_id, 'id':self.id})
 	@classmethod
 	def get_all(cls):
 		return db.engine.execute('''SELECT * FROM User''')
+	@classmethod
+	def search_user(cls, s):
+		comp = '"%' + s + '%"'
+		return db.engine.execute('''SELECT * FROM User WHERE name LIKE :ss''', {'ss':comp})
 
 class Server(db.Model):
     __tablename__ = "Server"
@@ -40,6 +46,7 @@ class ServerUser(db.Model):
 	__tablename__ = "ServerUser"
 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'), primary_key = True)
 	user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True)
+	role = db.Column(db.String(20)) # 'Creator', 'Admin', 'Spectator', 'Participant'
 
 class Invitation(db.Model):
 	__tablename__ = "Invitation"
@@ -68,6 +75,12 @@ class Channel(db.Model):
     								FROM User LEFT JOIN ChannelUser 
     								ON ChannelUser.channel_id = :id AND ChannelUser.user_id = User.id''', 
     								{'id':self.id})
+	def add_server_admins(self):
+		db.engine.execute('''INSERT INTO ChannelUser
+							 SELECT :cid , user_id
+							 FROM ServerUser
+							 WHERE server_id = :sid AND role = "Admin"''',
+							 {'cid':self.id, 'sid':self.server_id})
 	@classmethod
 	def get_public_channels(cls):
 		return db.engine.execute('''SELECT Channel.* 
@@ -94,13 +107,13 @@ class Message(db.Model):
 		l = list(db.engine.execute('''SELECT react_type FROM React WHERE React.reacted_to = :id''', {'id':self.id}))
 		if l[0] == 'yes':
 			db.engine.execute('''DELETE FROM React WHERE reacted_to = :id''', {'id':self.id})
-		else if l[0] == 'no':
+		elif l[0] == 'no':
 			db.engine.execute('''UPDATE React SET react_type = 'yes' WHERE reacted_to = :id''', {'id':self.id})
 	def react_no(self):
 		l = list(db.engine.execute('''SELECT react_type FROM React WHERE React.reacted_to = :id''', {'id':self.id}))
 		if l[0] == 'no':
 			db.engine.execute('''DELETE FROM React WHERE reacted_to = :id''', {'id':self.id})
-		else if l[0] == 'yes':
+		elif l[0] == 'yes':
 			db.engine.execute('''UPDATE React SET react_type = 'no' WHERE reacted_to = :id''', {'id':self.id})
 
 class React(db.Model):
