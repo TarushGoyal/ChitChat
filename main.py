@@ -1,6 +1,6 @@
 # main.py
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user
 from .models import *
 
@@ -27,14 +27,13 @@ def users():
 @login_required
 def server(id):
 	server = Server.query.get(id)
-	return render_template('server.html',server = server, 
-                                         channels = server.get_channels(), 
+	return render_template('server.html',server = server,
+                                         channels = server.get_channels(),
                                          members = server.get_users())
 
 @main.route('/channel/<id>', methods = ['GET'])
 @login_required
 def channel(id):
     channel = Channel.query.get(id)
-    return render_template('channel.html',channel = channel, 
-                                          chats = channel.get_messages(), 
+    return render_template('channel.html',channel = channel,
                                           members = channel.get_users())

@@ -1,0 +1,40 @@
+html, body {
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+}
+#content {
+    height: 80%;
+}
+
+.leftcolumn {
+  float: left;
+   width: 30%;
+   background: red;
+   height: 100%;
+   overflow: auto;
+   box-sizing: border-box;
+   padding: 0.4em;
+  background-color: #E1DDB6;
+}
+
+.rightcolumn {
+  float: left;
+   width: 70%;
+   background: blue;
+   height: 100%;
+   overflow: auto;
+   box-sizing: border-box;
+   padding: 0.4em;
+    background-color: #D6E5ED;
+}
+
+.complete-message {
+  background-color: #8AA2F5;
+  padding : 20px;
+  margin : 20px;
+}
+
+.topbar {
+
+}

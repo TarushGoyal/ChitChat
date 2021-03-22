@@ -1,7 +1,7 @@
 from flask import session
 from flask_socketio import emit, join_room, leave_room
 from . import socketIO
-from .models import Message, React
+from .models import Message, React, Channel
 from . import db
 from flask_login import login_required, current_user
 
@@ -16,7 +16,9 @@ def chat(json, methods=['GET', 'POST']):
     msg = Message(content = json['message'], posted_in = room, posted_by = current_user.id)
     db.session.add(msg)
     db.session.commit()
-    emit('add chat', json, room = room)
+    json['id'] = msg.id
+    json['posted_at'] = str(msg.posted_at)
+    emit('add chat', dict(msg), room = room)
 
 @socketIO.on('joined', namespace='/')
 @login_required
@@ -27,7 +29,10 @@ def joined(json):
     room = json['channel']
     print("Room:",room)
     join_room(room)
-    emit('status', {'msg': session.get('name') + ' has entered the room.'}, room=room)
+    channel = Channel.query.get(room)
+    chats = [dict(i) for i in channel.get_messages()]
+    # emit('status', {'msg': session.get('name') + ' has entered the room.'}, room=room)
+    emit('status', {'chats': chats}, room = current_user.id)
 
 @socketIO.on('left', namespace='/')
 def left(json):
@@ -48,4 +53,5 @@ def reacted(json):
     print("Received React in channel : {}, on message : {}, type = {}".format(room, message_id, type))
     db.session.add(react)
     db.session.commit()
+    json['id'] = react.id;
     emit('add react' , json, room = room)

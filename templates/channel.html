@@ -1,102 +1,40 @@
-<!-- templates/profile.html -->
-
-{% extends "base.html" %}
+{% extends "base2.html" %}
 
 {% block content %}
 
-<h1 class="title">
-  Welcome to Channel : {{ channel.name }}!
-</h1>
+</div>
 
-<style>
-.react {
-  padding: 0;
-border: none;
-background: none;
-display: inline;
-}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/channel.css') }}">
 
-.reactnum {
-  display: inline;
-}
-</style>
+<h1 class="title"> Welcome to Channel : {{ channel.name }}! </h1>
 
-<h2> Channel members are: </h2>
-{% for i in members:%}
-  <a href="/user/{{i.id}}"> {{i.name}}</a><br>
-{% endfor %}
-
-  <h2> Chats </h2>
-
-    {%if not chats%}
-       <h3 style='color: #ccc;font-size: 30px;'>No message yet..</h3>
-    {% endif %}
-    <div class="message_holder">
-      {% for chat in chats: %}
-          <div><b style="color: #000"> {{ chat.name }} </b> {{ chat.content }} </div>
-          <div>
-            <button class="react" id="{{chat.id*2}}">👍️ :</button>
-            <div class="reactnum" id="num{{chat.id*2}}">{{chat.yes}}</div>
-            <button class="react" id="{{chat.id*2 + 1}}">,👎 : </button>
-            <div class="reactnum" id="num{{chat.id*2+1}}">{{chat.no}}</div>
-          </div>
-      {% endfor %}
+<div id="content">
+    <div class="leftcolumn">
+        <h2> Channel members are: </h2>
+        {% for i in members:%}
+            <a href="/user/{{i.id}}"> {{i.name}}</a><br>
+        {% endfor %}
     </div>
+    <div class="rightcolumn">
+        <h2> Chats </h2>
 
-    <form action="" method="POST">
-      <input type="text" class="message" placeholder="type your message here"/>
-      <input type="submit"/>
-    </form>
+        <div class="message_holder">
+        </div>
+
+        <form action="" method="POST">
+          <input type="text" class="message" placeholder="type your message here"/>
+          <input type="submit"/>
+        </form>
+    </div>
+</div>
+
 
   <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
-
-  <script type="text/javascript">
-      var socket = io.connect('http://' + document.domain + ':' + location.port);
-
-      socket.on( 'connect', function() {
-
-        socket.emit('joined', {
-          channel : {{channel.id}}
-        });
-
-        var form = $( 'form' ).on( 'submit', function( e ) {
-          e.preventDefault();
-          let user_input = $( 'input.message' ).val();
-          socket.emit( 'send chat', {
-            message : user_input,
-            channel : {{channel.id}}
-          } );
-          $( 'input.message' ).val( '' ).focus();
-        } );
-
-        react_buttons = document.getElementsByClassName('react');
-        for (var i=0;i<react_buttons.length;i++) {
-          var react_button = react_buttons[i];
-          react_button.onclick = function() {
-            socket.emit('reacted', {
-                channel : {{channel.id}},
-                message_id : Math.floor(this.id/2),
-                type : (this.id%2 == 0) ? "yes" : "no",
-            } )
-          }
-        }
-
-      } );
-      socket.on('add chat',function(msg) {
-        console.log(msg);
-        if( typeof msg.user_name !== 'undefined' ) {
-          $( 'h3' ).remove()
-          $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
-        }
-      })
-      socket.on('add react',function(msg) {
-        console.log(msg);
-          var button_id = msg.message_id * 2 + ((msg.type == "yes") ? 0 : 1);
-          var bt = document.getElementById("num" + button_id);
-          bt.innerText = parseInt(bt.innerText) + 1;
-      })
-    </script>
-
+  <script>
+      var channel_id = {{channel.id}};
+  </script>
+  <script type=text/javascript src="{{
+    url_for('static', filename='js/channel.js') }}"></script>
 
 {% endblock %}
