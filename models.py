@@ -155,8 +155,12 @@ class Channel(db.Model):
 		    SELECT User.name AS name,
 			Message.id AS id, Message.content, Message.posted_at,
 			Message.deleted, Message.reply_to,
-		    count(CASE WHEN React.react_type = 'yes' THEN 1 END) AS yes,
-		    count(CASE WHEN React.react_type = 'no' THEN 1 END) AS no
+		    count(CASE WHEN React.react_type = 'like' THEN 1 END) AS "like",
+		    count(CASE WHEN React.react_type = 'love' THEN 1 END) AS love,
+			count(CASE WHEN React.react_type = 'angry' THEN 1 END) AS angry,
+			count(CASE WHEN React.react_type = 'laugh' THEN 1 END) AS laugh,
+			count(CASE WHEN React.react_type = 'wow' THEN 1 END) AS wow,
+			count(CASE WHEN React.react_type = 'sad' THEN 1 END) AS sad
 		    FROM (Message JOIN User) LEFT OUTER JOIN React
 		    ON Message.id = React.reacted_to
 		    WHERE Message.posted_by = User.id AND Message.posted_in = :id

@@ -4,7 +4,7 @@ html, body {
     margin: 0;
 }
 #content {
-    height: 80%;
+    height: 85%;
 }
 
 .leftcolumn {
@@ -27,12 +27,6 @@ html, body {
    box-sizing: border-box;
    padding: 0.4em;
     background-color: #D6E5ED;
-}
-
-.complete-message {
-  background-color: #8AA2F5;
-  padding : 20px;
-  margin : 20px;
 }
 
 .topbar {
