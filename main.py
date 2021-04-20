@@ -1,10 +1,12 @@
 # main.py
 
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for,send_from_directory
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for,send_from_directory, redirect
 from flask_login import login_required, current_user
 from .models import *
 from werkzeug.utils import secure_filename
 import os
+
+from . import db
 
 main = Blueprint('main', __name__)
 
@@ -77,3 +79,15 @@ def channel(id):
     channel = Channel.query.get(id)
     return render_template('channel.html',channel = channel,
                                           members = channel.get_users())
+
+@main.route('/server/<id>/add-channel', methods = ['GET', 'POST'])
+@login_required
+def add_channel(id):
+    if request.method == 'POST':
+        newChannel = Channel(name = request.form.get('channelName'), server_id = id)
+        db.session.add(newChannel)
+        db.session.commit()
+        return redirect(f'/server/{id}')
+    else:
+        server = Server.query.get(id)
+        return render_template('add-channel.html', server = server)
