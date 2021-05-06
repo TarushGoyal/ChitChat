@@ -65,6 +65,30 @@ def home():
     invites = current_user.get_invites()
     return render_template('home.html', name=current_user.name, servers=servers, invites=invites)
 
+@main.route('/user/<id>')
+def profile(id):
+    user = User.query.get(id)
+    return render_template('profile.html',user = user)
+
+@main.route('/updateDP', methods = ['POST'])
+def updateDP():
+    if 'file' not in request.files:
+        print("file argument missing in form data")
+        return redirect(url_for('main.profile', id = current_user.id))
+    file = request.files['file']
+    if '.' not in file.filename:
+        print("file name missing in form data")
+        return redirect(url_for('main.profile', id = current_user.id))
+    ext = file.filename.split('.')[-1]
+    if file and ext in ['jpg','png','jpeg']:
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        file.save(os.path.join(basedir,'./static/DPs/', str(current_user.id) + '.' + ext))
+        current_user.DP = str(current_user.id) + '.' + ext
+        db.session.commit()
+        return redirect(url_for('main.profile', id = current_user.id))
+    print("Error-----------------------")
+    return redirect(url_for('main.profile', id = current_user.id))
+
 @main.route('/users')
 def users():
 	data = [i.id for i in User.get_all()]
@@ -127,7 +151,7 @@ def add_server_member(id):
 @main.route('/server/<sid>/invite/<uid>', methods = ['POST'])
 @login_required
 def send_invite(sid, uid):
-    invite = Invitation(server_id = sid, user_id = uid)
+    invite = Invitation(server_id = sid, user_id = uid, description = request.form.get('inviteMsg'))
     db.session.add(invite)
     db.session.commit()
     print(sid,uid)
@@ -137,7 +161,7 @@ def send_invite(sid, uid):
 @login_required
 def accept_invite(id):
     invite = Invitation.query.get(id)
-
+    invite.accepted = True;
     member = ServerUser(server_id = invite.server_id, user_id = invite.user_id, role = 'Member')
     db.session.add(member)
 
@@ -151,9 +175,9 @@ def accept_invite(id):
 @login_required
 def decline_invite(id):
     invite = Invitation.query.get(id)
-    # invite.hidden = True
+    invite.hidden = True
     db.session.commit()
-    return redirect(f'/server/{invite.server_id}')
+    return redirect(url_for('main.home'))
 
 
 @main.route('/add-server', methods = ['POST', 'GET'])

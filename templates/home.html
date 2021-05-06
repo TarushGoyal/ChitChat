@@ -7,16 +7,20 @@
   Welcome, {{ name }}!
 </h1>
 <h2> Your Invitations are: </h2>
+<ul>
 {% for i in invites:%}
-    <label>{{i.name}}</label> <br>
+<li>
+    <h3>{{i.name}}</h3>
+    <p> {{i.description}}</p>
     <form class="text-form" action="/accept-invite/{{i.id}}" method="POST">
         <input type="submit" value="Accept"/>
     </form>
     <form class="text-form" action="/decline-invite/{{i.id}}" method="POST">
         <input type="submit" value="Decline"/>
     </form>
-    <br>
+</li>
 {% endfor %}
+</ul>
 <h2> Your Servers are: </h2>
 {% for s in servers:%}
 	<a href="/server/{{s.id}}"> {{s.name}}</a><br>
