@@ -1,0 +1,23 @@
+{% extends "base2.html" %}
+
+{% block content %}
+
+</div>
+
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/add-channel.css') }}">
+
+<h1 class="title"> Add Channel to : {{ server.name }} </h1>
+
+<div id="content">
+  <div class="form-holder">
+      <form class="text-form" action="" method="POST">
+        <label>Channel Name:</label>
+        <input type="text" class="form-control" name="channelName" placeholder="Enter new channel name"/>
+        <input type="submit" value="Create"/>
+      </form>
+  </div>
+
+</div>
+
+
+{% endblock %}

@@ -6,13 +6,20 @@
 <h1 class="title">
   Welcome, {{ name }}!
 </h1>
-<h2> Your DMs are: </h2>
-{% for i in dms:%}
-	<a href = "/dm/{{i.id}}">{{i.name}}</a>
+<h2> Your Invitations are: </h2>
+{% for i in invites:%}
+    <label>{{i.name}}</label> <br>
+    <form class="text-form" action="/accept-invite/{{i.id}}" method="POST">
+        <input type="submit" value="Accept"/>
+    </form>
+    <form class="text-form" action="/decline-invite/{{i.id}}" method="POST">
+        <input type="submit" value="Decline"/>
+    </form>
+    <br>
 {% endfor %}
 <h2> Your Servers are: </h2>
-{% for i in servers:%}
-	<a href="/server/{{i.id}}"> {{i.name}}</a>
+{% for s in servers:%}
+	<a href="/server/{{s.id}}"> {{s.name}}</a>
 {% endfor %}
 
 <script>
