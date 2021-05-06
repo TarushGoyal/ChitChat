@@ -102,6 +102,8 @@ class User(UserMixin, db.Model):
 	name = db.Column(db.String(1000))
 	def get_servers(self):
 		return Server.query.join(ServerUser).filter(ServerUser.user_id == self.id).all()
+	def get_invites(self):
+		return db.engine.execute('''SELECT Invitation.id, Invitation.server_id, Server.name FROM Invitation INNER JOIN Server ON Invitation.server_id = Server.id WHERE Invitation.user_id = :id''', {'id':self.id});
 	def assign_role(self, server_id, role):
 		db.engine.execute('''UPDATE ServerUser SET role = :r WHERE server_id = :s AND user_id = :id''', {'r':role, 's':server_id, 'id':self.id})
 	@classmethod
@@ -109,7 +111,7 @@ class User(UserMixin, db.Model):
 		return db.engine.execute('''SELECT * FROM User''')
 	@classmethod
 	def search_user(cls, s):
-		comp = '"%' + s + '%"'
+		comp = '%' + s + '%'
 		return db.engine.execute('''SELECT * FROM User WHERE name LIKE :ss''', {'ss':comp})
 
 class Server(db.Model):
@@ -136,13 +138,17 @@ class ServerUser(db.Model):
 	__tablename__ = "ServerUser"
 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'), primary_key = True)
 	user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True)
-	role = db.Column(db.String(20)) # 'Creator', 'Admin', 'Spectator', 'Participant'
+	role = db.Column(db.String(20)) # 'Creator', 'Admin', 'Member'
 
 class Invitation(db.Model):
 	__tablename__ = "Invitation"
 	id = db.Column(db.Integer, primary_key=True)
 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'))
 	user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
+	# description = db.Column(db.String(1000))
+	# channel_role = db.Column(db.String(20), default = 'Participant')
+	# hidden = db.Column(db.Boolean, default = False)
+	# accepted = db.Column(db.Boolean, default = False)
 
 class Channel(db.Model):
 	__tablename__ = "Channel"
@@ -150,6 +156,9 @@ class Channel(db.Model):
 	name = db.Column(db.String(1000))
 	created_at = db.Column(db.DateTime)
 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'))
+	# description = db.Column(db.Column(1000))
+	# is_open = db.Column(db.Boolean)
+
 	def get_messages(self):
 		return db.engine.execute('''
 		    SELECT User.name AS name,

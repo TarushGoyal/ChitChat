@@ -1,0 +1,33 @@
+{% extends "base2.html" %}
+
+{% block content %}
+
+</div>
+
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/add-server-member.css') }}">
+
+<h1 class="title"> Add Member to : {{ server.name }} </h1>
+
+<div id="content">
+  <div class="form-holder">
+      <form class="text-form" action="" method="POST">
+        <label>Search User Name:</label>
+        <input type="text" class="form-control" name="searchQuery" placeholder="Search Users by entering name"/>
+        <input type="submit" value="Search"/>
+      </form>
+  </div>
+  {% for u in matchList:%}
+    <br>
+    <form class="text-form" action="/server/{{server.id}}/invite/{{u.id}}" method="POST">
+        <label>{{u.name}}</label> <br>
+        <label>Type an invite message:</label>
+        <input type="text" class="form-control" name="inviteMsg" placeholder="Enter message"/>
+        <input type="submit" value="Invite"/>
+    </form>
+  {% endfor %}
+
+
+</div>
+
+
+{% endblock %}

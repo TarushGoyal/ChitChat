@@ -1,0 +1,23 @@
+{% extends "base2.html" %}
+
+{% block content %}
+
+</div>
+
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/add-server.css') }}">
+
+<h1 class="title"> Create a new Server, {{user_name}} </h1>
+
+<div id="content">
+  <div class="form-holder">
+      <form class="text-form" action="" method="POST">
+        <label>Server Name:</label>
+        <input type="text" class="form-control" name="serverName" placeholder="Enter new server name"/>
+        <input type="submit" value="Create"/>
+      </form>
+  </div>
+
+</div>
+
+
+{% endblock %}
