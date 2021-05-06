@@ -13,7 +13,7 @@ def chat(json, methods=['GET', 'POST']):
         return
     json['user_name'] = current_user.name
     room = json['channel']
-    msg = Message(content = json['message'], posted_in = room, posted_by = current_user.id)
+    msg = Message(content = json['message'], type = "text", posted_in = room, posted_by = current_user.id)
     db.session.add(msg)
     db.session.commit()
     json['id'] = msg.id
@@ -28,16 +28,13 @@ def chat(json, methods=['GET', 'POST']):
 @login_required
 def file(json, methods=['GET', 'POST']):
     if not json['filename']:
+        print ("Error: No file name in chat")
         return
     json['user_name'] = current_user.name
     room = json['channel']
     filename = json['filename']
-    data = json['data']
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    path = os.path.join(basedir,'./static/files', filename)
-    with open(path, "w") as f:
-        f.write(data)
-    msg = Message(content = path, posted_in = room, posted_by = current_user.id)
+    folder = json['folder']
+    msg = Message(link = '/uploads/' + folder + '/' + filename, type = "file", posted_in = room, posted_by = current_user.id)
     db.session.add(msg)
     db.session.commit()
     json['id'] = msg.id
@@ -55,9 +52,7 @@ def joined(json):
     print("join request received by : ",current_user.id)
     room = json['channel']
     join_room(room)
-    channel = Channel.query.get(room)
-    chats = [dict(i) for i in channel.get_messages()]
-    emit('status', {'chats': chats})
+    emit('status', {})
 
 @socketIO.on('left', namespace='/')
 def left(json):

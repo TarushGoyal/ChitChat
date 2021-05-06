@@ -39,7 +39,16 @@
         <input type="file" name="file" class="file"/>
         <input type="submit" value="Upload"/>
       </form>
-      <button id="switch-button" type="button" name="button"> Switch </button>
+      <form class="search-form" action="" method=post enctype=multipart/form-data>
+        <label for="keyword">Keyword:</label>
+        <input type="text" id="keyword" name="keyword" placeholder=""/>
+        <label for="sender">Sender:</label>
+        <input type="text" id="sender" name="sender" placeholder="all"/>
+        <input type="submit"/>
+      </form>
+      <button id="switch-text-button" type="button" name="button"> Type Text </button>
+      <button id="switch-file-button" type="button" name="button"> Upload File </button>
+      <button id="switch-search-button" type="button" name="button"> Search Messages </button>
     </div>
 
 </div>
@@ -49,18 +58,29 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
   <script>
       var channel_id = {{channel.id}};
-      var switch_button = $('#switch-button');
       var mode = 0;
-      switch_button.click(() => {
-          if (mode === 0) {
-              $('.text-form').hide();
-              $('.file-form').show();
-              mode = 1;
-          } else {
-              $('.file-form').hide();
-              $('.text-form').show();
-              mode = 0;
-          }
+
+      var switch_text_button = $('#switch-text-button');
+      var switch_file_button = $('#switch-file-button');
+      var switch_search_button = $('#switch-search-button');
+      switch_text_button.click(() => {
+          $('.text-form').show();
+          $('.file-form').hide();
+          $('.search-form').hide();
+          mode = 0;
+      });
+      switch_file_button.click(() => {
+          $('.text-form').hide();
+          $('.file-form').show();
+          $('.search-form').hide();
+          mode = 1;
+      });
+      switch_search_button.click(() => {
+          $('.text-form').hide();
+          $('.file-form').hide();
+          $('.search-form').show();
+          // $('.rightcolumn').height("70%");
+          mode = 2;
       });
   </script>
   <script type=text/javascript src="{{

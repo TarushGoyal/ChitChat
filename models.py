@@ -150,22 +150,42 @@ class Channel(db.Model):
 	name = db.Column(db.String(1000))
 	created_at = db.Column(db.DateTime)
 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'))
-	def get_messages(self):
-		return db.engine.execute('''
-		    SELECT User.name AS name,
-			Message.id AS id, Message.content, Message.posted_at,
-			Message.deleted, Message.reply_to,
-		    count(CASE WHEN React.react_type = 'like' THEN 1 END) AS "like",
-		    count(CASE WHEN React.react_type = 'love' THEN 1 END) AS love,
-			count(CASE WHEN React.react_type = 'angry' THEN 1 END) AS angry,
-			count(CASE WHEN React.react_type = 'laugh' THEN 1 END) AS laugh,
-			count(CASE WHEN React.react_type = 'wow' THEN 1 END) AS wow,
-			count(CASE WHEN React.react_type = 'sad' THEN 1 END) AS sad
-		    FROM (Message JOIN User) LEFT OUTER JOIN React
-		    ON Message.id = React.reacted_to
-		    WHERE Message.posted_by = User.id AND Message.posted_in = :id
-		    GROUP BY Message.id, Message.content, User.name''',
-		    {'id' : self.id})
+	def get_messages(self, keyword, sender):
+		if sender == "":
+			return db.engine.execute('''
+			    SELECT User.name AS name,
+				Message.id AS id, Message.content, Message.posted_at,
+				Message.deleted, Message.reply_to, Message.type, Message.link,
+			    count(CASE WHEN React.react_type = 'like' THEN 1 END) AS "like",
+			    count(CASE WHEN React.react_type = 'love' THEN 1 END) AS love,
+				count(CASE WHEN React.react_type = 'angry' THEN 1 END) AS angry,
+				count(CASE WHEN React.react_type = 'laugh' THEN 1 END) AS laugh,
+				count(CASE WHEN React.react_type = 'wow' THEN 1 END) AS wow,
+				count(CASE WHEN React.react_type = 'sad' THEN 1 END) AS sad
+			    FROM (Message JOIN User) LEFT OUTER JOIN React
+			    ON Message.id = React.reacted_to
+			    WHERE Message.posted_by = User.id AND Message.posted_in = :id
+				AND Message.content LIKE :pattern
+			    GROUP BY Message.id, Message.content, User.name''',
+			    {'id' : self.id, 'pattern' : '%' + keyword + '%'})
+		else:
+			return db.engine.execute('''
+			    SELECT User.name AS name,
+				Message.id AS id, Message.content, Message.posted_at,
+				Message.deleted, Message.reply_to, Message.type, Message.link,
+			    count(CASE WHEN React.react_type = 'like' THEN 1 END) AS "like",
+			    count(CASE WHEN React.react_type = 'love' THEN 1 END) AS love,
+				count(CASE WHEN React.react_type = 'angry' THEN 1 END) AS angry,
+				count(CASE WHEN React.react_type = 'laugh' THEN 1 END) AS laugh,
+				count(CASE WHEN React.react_type = 'wow' THEN 1 END) AS wow,
+				count(CASE WHEN React.react_type = 'sad' THEN 1 END) AS sad
+			    FROM (Message JOIN User) LEFT OUTER JOIN React
+			    ON Message.id = React.reacted_to
+			    WHERE Message.posted_by = User.id AND Message.posted_in = :id
+				AND User.name = :sender
+				AND Message.content LIKE :pattern
+			    GROUP BY Message.id, Message.content, User.name''',
+			    {'id' : self.id, 'sender' : sender, 'pattern' :'%' + keyword + '%'})
 	def get_users(self):
 		return db.engine.execute('''SELECT User.*
     								FROM User LEFT JOIN ChannelUser
@@ -188,18 +208,32 @@ class ChannelUser(db.Model):
     channel_id = db.Column(db.Integer, db.ForeignKey('Channel.id'), primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True)
 
+# class Message(db.Model):
+# 	__tablename__ = "Message"
+# 	id = db.Column(db.Integer, primary_key=True)
+# 	content = db.Column(db.String(10000))
+# 	posted_at = db.Column(db.DateTime, server_default = db.func.now())
+# 	deleted = db.Column(db.Boolean)
+# 	posted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+# 	posted_in = db.Column(db.Integer, db.ForeignKey('Channel.id'))
+# 	reply_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
+# 	def delete_message(self):
+# 		self.deleted = True
+
 class Message(db.Model):
 	__tablename__ = "Message"
-	id = db.Column(db.Integer, primary_key=True)
+	id = db.Column(db.Integer, primary_key = True, nullable = False)
+	type = db.Column(db.String(10), nullable = False)
 	content = db.Column(db.String(10000))
+	link = db.Column(db.String(200))
 	posted_at = db.Column(db.DateTime, server_default = db.func.now())
-	deleted = db.Column(db.Boolean)
+	deleted = db.Column(db.Boolean, default = False)
 	posted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+	# posted_by_name = db.Column(db.String(100))
 	posted_in = db.Column(db.Integer, db.ForeignKey('Channel.id'))
 	reply_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
 	def delete_message(self):
 		self.deleted = True
-
 class React(db.Model):
 	__tablename__ = "React"
 	id = db.Column(db.Integer, primary_key=True)

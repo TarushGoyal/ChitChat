@@ -1,45 +1,54 @@
 # main.py
 
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for,send_from_directory
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for,send_from_directory, flash
 from flask_login import login_required, current_user
 from .models import *
 from werkzeug.utils import secure_filename
 import os
+import random, string
 
 main = Blueprint('main', __name__)
 
 def allowed_file(filename):
+    return True
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@main.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory('./static/files', filename)
+@main.route('/uploads/<folder>/<filename>')
+def uploaded_file(folder,filename):
+    return send_from_directory('./static/files/'+folder, filename)
 
 @main.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
+        print("---main.py upload_file()---")
         if 'file' not in request.files:
+            print("file argument missing in form data")
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
+            print("file name missing in form data")
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
+            print("valid file")
             filename = secure_filename(file.filename)
             basedir = os.path.abspath(os.path.dirname(__file__))
-            file.save(os.path.join(basedir,'./static/files', filename))
-            return redirect(url_for('main.uploaded_file',
-                                    filename=filename))
+            folder = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            os.mkdir(os.path.join(basedir,'./static/files',folder))
+            file.save(os.path.join(basedir,'./static/files/' + folder + "/", filename))
+            # return redirect(url_for('main.uploaded_file',
+                                    # folder=folder,filename=filename))
+            return jsonify({"folder" : folder})
     return '''
     <!doctype html>
     <title>Upload new File</title>
-    <h1>Upload new File</h1>
+    <h1>Upload new'No selected file') File</h1>
     <form method=post enctype=multipart/form-data>
       <input type=file name=file>
       <input type=submit value=Upload>
@@ -77,3 +86,18 @@ def channel(id):
     channel = Channel.query.get(id)
     return render_template('channel.html',channel = channel,
                                           members = channel.get_users())
+
+@main.route('/chats/<id>', methods = ['POST','GET'])
+@login_required
+def chats(id):
+    # print(request.form)
+    # # print(dict(request.data))
+    # print(request.args)
+    if request.method == 'POST':
+        keyword = request.form['keyword']
+        sender = request.form['sender']
+        channel = Channel.query.get(id)
+        chats = [dict(i) for i in channel.get_messages(keyword = keyword, sender = sender)]
+        return jsonify({
+            'chats' : chats
+    })

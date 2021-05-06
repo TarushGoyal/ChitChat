@@ -21,7 +21,7 @@
   margin : 10px;
 }
 
-input[type=text]{
+.text-form input[type=text]{
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
@@ -33,7 +33,7 @@ input[type=text]{
   width : 56%;
 }
 
-input[type=submit] {
+.text-form input[type=submit] {
   background-color: #4CAF50;
   color: white;
   padding: 14px 20px;
@@ -47,6 +47,10 @@ input[type=submit] {
 }
 
 .file-form {
+  display : none;
+}
+
+.search-form {
   display : none;
 }
 
@@ -113,4 +117,15 @@ font-family:    Arial, Helvetica, sans-serif;
 font-size:      15px;
 font-weight:    bold;
 display: inline;
+}
+
+.filediv {
+  background-color: #AAAAAA;
+  padding : 10px;
+  text-decoration: none;
+  display : block-inline;
+}
+
+#switch-text-button {
+  visibility : none;
 }
