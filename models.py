@@ -127,7 +127,7 @@ class Server(db.Model):
     								{'id':self.id})
     def get_users(self):
     	return db.engine.execute('''SELECT User.*
-    								FROM User LEFT JOIN ServerUser
+    								FROM User INNER JOIN ServerUser
     								ON ServerUser.server_id = :id AND ServerUser.user_id = User.id''',
     								{'id':self.id})
     @classmethod

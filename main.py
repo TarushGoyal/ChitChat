@@ -11,12 +11,6 @@ from . import db
 
 main = Blueprint('main', __name__)
 
-def allowed_file(filename):
-    return True
-    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @main.route('/uploads/<folder>/<filename>')
 def uploaded_file(folder,filename):
     return send_from_directory('./static/files/'+folder, filename)
@@ -37,7 +31,7 @@ def upload_file():
             print("file name missing in form data")
             flash('No selected file')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
+        if file:
             print("valid file")
             filename = secure_filename(file.filename)
             basedir = os.path.abspath(os.path.dirname(__file__))
@@ -59,14 +53,17 @@ def upload_file():
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    if current_user.is_authenticated:
+         return redirect('/home')
+    else:
+         return redirect('/login')
 
-@main.route('/profile')
+@main.route('/home')
 @login_required
-def profile():
+def home():
     servers = current_user.get_servers()
     invites = current_user.get_invites()
-    return render_template('profile.html', name=current_user.name, servers=servers, invites=invites)
+    return render_template('home.html', name=current_user.name, servers=servers, invites=invites)
 
 @main.route('/users')
 def users():
