@@ -157,41 +157,29 @@ class Channel(db.Model):
 	created_at = db.Column(db.DateTime)
 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'))
 	def get_messages(self, keyword, sender):
-		if sender == "":
-			return db.engine.execute('''
-			    SELECT User.name AS name,
-				Message.id AS id, Message.content, Message.posted_at,
-				Message.deleted, Message.reply_to, Message.type, Message.link,
-			    count(CASE WHEN React.react_type = 'like' THEN 1 END) AS "like",
-			    count(CASE WHEN React.react_type = 'love' THEN 1 END) AS love,
-				count(CASE WHEN React.react_type = 'angry' THEN 1 END) AS angry,
-				count(CASE WHEN React.react_type = 'laugh' THEN 1 END) AS laugh,
-				count(CASE WHEN React.react_type = 'wow' THEN 1 END) AS wow,
-				count(CASE WHEN React.react_type = 'sad' THEN 1 END) AS sad
-			    FROM (Message JOIN User) LEFT OUTER JOIN React
-			    ON Message.id = React.reacted_to
-			    WHERE Message.posted_by = User.id AND Message.posted_in = :id
-				AND Message.content LIKE :pattern
-			    GROUP BY Message.id, Message.content, User.name''',
-			    {'id' : self.id, 'pattern' : '%' + keyword + '%'})
-		else:
-			return db.engine.execute('''
-			    SELECT User.name AS name,
-				Message.id AS id, Message.content, Message.posted_at,
-				Message.deleted, Message.reply_to, Message.type, Message.link,
-			    count(CASE WHEN React.react_type = 'like' THEN 1 END) AS "like",
-			    count(CASE WHEN React.react_type = 'love' THEN 1 END) AS love,
-				count(CASE WHEN React.react_type = 'angry' THEN 1 END) AS angry,
-				count(CASE WHEN React.react_type = 'laugh' THEN 1 END) AS laugh,
-				count(CASE WHEN React.react_type = 'wow' THEN 1 END) AS wow,
-				count(CASE WHEN React.react_type = 'sad' THEN 1 END) AS sad
-			    FROM (Message JOIN User) LEFT OUTER JOIN React
-			    ON Message.id = React.reacted_to
-			    WHERE Message.posted_by = User.id AND Message.posted_in = :id
-				AND User.name = :sender
-				AND Message.content LIKE :pattern
-			    GROUP BY Message.id, Message.content, User.name''',
-			    {'id' : self.id, 'sender' : sender, 'pattern' :'%' + keyword + '%'})
+		query = '''
+		SELECT User.name AS name,
+		Message.id AS id, Message.content, Message.posted_at,
+		Message.deleted, Message.reply_to, Message.type, Message.link,
+		count(CASE WHEN React.react_type = 'like' THEN 1 END) AS "like",
+		count(CASE WHEN React.react_type = 'love' THEN 1 END) AS love,
+		count(CASE WHEN React.react_type = 'angry' THEN 1 END) AS angry,
+		count(CASE WHEN React.react_type = 'laugh' THEN 1 END) AS laugh,
+		count(CASE WHEN React.react_type = 'wow' THEN 1 END) AS wow,
+		count(CASE WHEN React.react_type = 'sad' THEN 1 END) AS sad
+		FROM (Message JOIN User) LEFT OUTER JOIN React
+		ON Message.id = React.reacted_to
+		WHERE Message.posted_by = User.id AND Message.posted_in = :id
+		'''
+		args = {'id' : self.id}
+		if sender != "":
+			query += ''' AND User.name = :sender '''
+			args['sender'] = sender
+		if keyword != "":
+			query += ''' AND Message.content LIKE :pattern '''
+			args['pattern'] = '%' + keyword + '%'
+		query += ''' GROUP BY Message.id, Message.content, User.name '''
+		return db.engine.execute(query,args)
 	def get_users(self):
 		return db.engine.execute('''SELECT User.*
     								FROM User LEFT JOIN ChannelUser
