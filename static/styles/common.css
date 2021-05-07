@@ -7,6 +7,29 @@ html, body {
     height: 85%;
 }
 
+.auth-form input[type=text] {
+    width:50%;
+    margin:20px;
+    padding:5px;
+}
+
+.auth-form input[type=email] {
+    width:50%;
+    margin:20px;
+    padding:5px;
+}
+
+.auth-form input[type=password] {
+    width:50%;
+    margin:20px;
+    padding:5px;
+}
+
+.auth-form button {
+    width:25%;
+    padding:10px;
+}
+
 .leftcolumn {
   float: left;
    width: 30%;
@@ -30,5 +53,9 @@ html, body {
 }
 
 .topbar {
+    background-color: #F19898;
+}
 
+.topbar a {
+    margin : 10px;
 }

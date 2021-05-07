@@ -1,4 +1,4 @@
-# ChitChat / Hemlo [Name still under consideration]
+# Hemlo
 ## Real-time chatting and communication
 
 ### First Timers:
