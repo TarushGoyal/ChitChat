@@ -15,6 +15,9 @@ def chat(json, methods=['GET', 'POST']):
         return
     json['user_name'] = current_user.name
     room = json['channel']
+    cu = ChannelUser.query.get((room, current_user.id))
+    if not cu or cu.role == 'Spectator':
+        return
     reply_id = json['reply_id']
     if not reply_id:
         msg = Message(content = json['message'], type = "text", posted_in = room, posted_by = current_user.id)
@@ -52,6 +55,9 @@ def file(json, methods=['GET', 'POST']):
         return
     json['user_name'] = current_user.name
     room = json['channel']
+    cu = ChannelUser.query.get((room, current_user.id))
+    if not cu or cu.role == 'Spectator':
+        return
     filename = json['filename']
     folder = json['folder']
     msg = Message(link = '/uploads/' + folder + '/' + filename, type = "file", posted_in = room, posted_by = current_user.id)
@@ -87,7 +93,13 @@ def left(json):
 @login_required
 def reacted(json):
     room = json['channel']
+    cu = ChannelUser.query.get((room, current_user.id))
+    if not cu:
+        return
     message_id = json['message_id']
+    message = Message.query.get(message_id)
+    if not message or message.deleted:
+        return
     type = json['type']
     if type not in ['love', 'laugh', 'like', 'angry', 'wow', 'sad']:
         return
@@ -101,6 +113,9 @@ def reacted(json):
 @login_required
 def deleted(json):
     room = json['channel']
+    cu = ChannelUser.query.get((room, current_user.id))
+    if not cu or cu.role == 'Spectator':
+        return
     message_id = json['message_id']
     message = Message.query.get(message_id)
     if current_user.id != message.posted_by:
