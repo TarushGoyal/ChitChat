@@ -3,10 +3,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  Welcome, {{ name }}!
-</h1>
-<h2> Your Invitations are: </h2>
+
+<style>
+.DP {
+    display: block;
+    max-width:180px;
+    max-height:180px;
+    width: auto;
+    height: auto;
+    margin : 30px;
+}
+
+h2 {
+  margin : 30px;
+}
+table {
+  margin : 30px;
+}
+</style>
+
+<h1 class="title"> Welcome to profile of {{ user.name }}! </h1>
+<img class="DP" src="{{ url_for('static', filename = 'DPs/' + user.DP)}}" alt="">
+{% if current_user.id == user.id %}
+<form method="POST" action="/updateDP" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <input type="submit" value="Upload">
+</form>
+{% endif %}
+
+<h2> ABOUT </h2>
+<table>
+  <tr>
+    <td> Name </td>
+    <td> {{user.name}} </td>
+  </tr>
+  <tr>
+    <td> Email </td>
+    <td> {{user.email}} </td>
+  </tr>
+  <tr>
+    <td> Gender </td>
+    <td> {{user.gender}} </td>
+  </tr>
+  <tr>
+    <td> Bio </td>
+    <td> {{user.bio}} </td>
+  </tr>
+</table>
+<!-- <h2> Your Invitations are: </h2>
 {% for i in invites:%}
     <label>{{i.name}}</label> <br>
     <form class="text-form" action="/accept-invite/{{i.id}}" method="POST">
@@ -16,17 +60,6 @@
         <input type="submit" value="Decline"/>
     </form>
     <br>
-{% endfor %}
-<h2> Your Servers are: </h2>
-{% for s in servers:%}
-	<a href="/server/{{s.id}}"> {{s.name}}</a>
-{% endfor %}
-
-<script>
-fetch('/users')
-  .then(function (response) {
-      	console.log(response.json());
-  })
-</script>
+{% endfor %} -->
 
 {% endblock %}

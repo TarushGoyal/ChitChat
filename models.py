@@ -100,10 +100,20 @@ class User(UserMixin, db.Model):
 	email = db.Column(db.String(100), unique=True)
 	password = db.Column(db.String(100))
 	name = db.Column(db.String(1000))
+	DP = db.Column(db.String(500), default = "0.jpeg")
+	gender = db.Column(db.String(10), default = "unknown")
+	bio = db.Column(db.String(100), default = "Hemlo there I am using Hemlo")
 	def get_servers(self):
 		return Server.query.join(ServerUser).filter(ServerUser.user_id == self.id).all()
 	def get_invites(self):
-		return db.engine.execute('''SELECT Invitation.id, Invitation.server_id, Server.name FROM Invitation INNER JOIN Server ON Invitation.server_id = Server.id WHERE Invitation.user_id = :id''', {'id':self.id});
+		return db.engine.execute('''
+			SELECT Invitation.id, Invitation.server_id, Invitation.description, Server.name
+			FROM Invitation INNER JOIN Server
+			ON Invitation.server_id = Server.id
+			WHERE Invitation.user_id = :id
+			AND Invitation.accepted = 0
+			AND Invitation.hidden = 0
+		''', {'id':self.id});
 	def assign_role(self, server_id, role):
 		db.engine.execute('''UPDATE ServerUser SET role = :r WHERE server_id = :s AND user_id = :id''', {'r':role, 's':server_id, 'id':self.id})
 	@classmethod
@@ -148,10 +158,10 @@ class Invitation(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'))
 	user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
-	# description = db.Column(db.String(1000))
+	description = db.Column(db.String(1000))
 	# channel_role = db.Column(db.String(20), default = 'Participant')
-	# hidden = db.Column(db.Boolean, default = False)
-	# accepted = db.Column(db.Boolean, default = False)
+	hidden = db.Column(db.Boolean, default = False)
+	accepted = db.Column(db.Boolean, default = False)
 
 class Channel(db.Model):
 	__tablename__ = "Channel"
@@ -185,7 +195,7 @@ class Channel(db.Model):
 		return db.engine.execute(query,args)
 	def get_users(self):
 		return db.engine.execute('''SELECT User.*
-    								FROM User LEFT JOIN ChannelUser
+    								FROM User INNER JOIN ChannelUser
     								ON ChannelUser.channel_id = :id AND ChannelUser.user_id = User.id''',
     								{'id':self.id})
 	def add_server_admins(self):
