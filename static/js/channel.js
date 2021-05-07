@@ -57,7 +57,7 @@ socket.on( 'connect', function() {
     };
   }
 
-  function add_message(id, sender_name, time, text, reactions, type, deleted, replied) {
+  function add_message(id, sender_name, time, text, reactions, type, deleted, replied, top) {
       // console.log("Adding message : ", type, id, sender_name, time, text, reactions);
       var sender = $('<div class="sender">' + sender_name + '</div>');
       var time = $('<div class="timestamp">' + time + '</div>');
@@ -112,22 +112,27 @@ socket.on( 'connect', function() {
       complete_message.mouseenter(() => {react_button_tray.css("display", "inline");});
       complete_message.mouseleave(() => {react_button_tray.css("display", "none");});
       // $('.message_holder').remove($('#message-spacer'));
-      $('.message_holder').append(complete_message);
+      if (top)
+          $('.message_holder').prepend(complete_message);
+      else
+          $('.message_holder').append(complete_message);
       // $('.message_holder').append($('#message-spacer'));
 
   }
 
-  function load_chats(keyword, sender) {
+  function load_chats(keyword, sender, last_message) {
     const myNode = document.getElementsByClassName("message_holder")[0];
-    myNode.innerHTML = '';
+    if (!last_message)
+        myNode.innerHTML = '';
     $.ajax({
         url: '/chats/' + channel_id,
-        data : {'keyword' : keyword, 'sender' : sender},
+        data : {'keyword' : keyword, 'sender' : sender, 'last_message' : last_message},
         type: 'POST',
         success: function(response) {
             console.log("Fetched older chats");
             console.log(response);
             msg = response;
+            if (!last_message){
             for (var i = 0; i < msg.chats.length; i++) {
               var chat = msg.chats[i];
               var samaan = (chat.type == "text") ? chat.content : chat.link;
@@ -139,8 +144,23 @@ socket.on( 'connect', function() {
                  wow   : chat.wow,
                  sad   : chat.sad,
               }, chat.type, chat.deleted,chat.reply_to);
+              }
+              document.querySelector('.rightcolumn').scrollTop = document.querySelector('.rightcolumn').scrollHeight;
             }
-            document.querySelector('.rightcolumn').scrollTop = document.querySelector('.rightcolumn').scrollHeight;
+            else {
+              for (var i = msg.chats.length-1; i >=0 ;i--) {
+                var chat = msg.chats[i];
+                var samaan = (chat.type == "text") ? chat.content : chat.link;
+                add_message(chat.id, chat.name, chat.posted_at, samaan, {
+                   like  : chat.like,
+                   love  : chat.love,
+                   angry : chat.angry,
+                   laugh : chat.laugh,
+                   wow   : chat.wow,
+                   sad   : chat.sad,
+                }, chat.type, chat.deleted,chat.reply_to, 1);
+                }
+            }
         },
         error: function(error) {
             console.log("Could not fetch chats!",error);
@@ -213,6 +233,17 @@ socket.on( 'connect', function() {
       load_chats('','');
   });
 
+  $('#load-more').click(() => {
+      var el = $('.message_holder .complete-message').first();
+      console.log("Heeeeeeeeey1",el);
+      if (!el) return;
+      console.log("Heeeeeeeeey2",el.attr('id').substring(17));
+      load_chats(
+          keyword = $('.search-form #keyword').val(),
+          sender = $('.search-form #sender').val(),
+          el.attr('id').substring(17)
+      )
+  })
 
   react_buttons = document.getElementsByClassName('react-button');
   for (var i=0;i<react_buttons.length;i++) {

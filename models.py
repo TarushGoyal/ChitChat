@@ -242,7 +242,7 @@ class Channel(db.Model):
 	server_id = db.Column(db.Integer, db.ForeignKey('Server.id'))
 	description = db.Column(db.String(1000))
 	open = db.Column(db.Boolean, default = False)
-	def get_messages(self, keyword, sender):
+	def get_messages(self, keyword, sender, id = None):
 		query = '''
 		SELECT User.name AS name,
 		Message.id AS id, Message.content, Message.posted_at,
@@ -264,7 +264,14 @@ class Channel(db.Model):
 		if keyword != "":
 			query += ''' AND Message.content LIKE :pattern '''
 			args['pattern'] = '%' + keyword + '%'
-		query += ''' GROUP BY Message.id, Message.content, User.name '''
+		if id is not None:
+			query += ''' AND Message.id < :last_message '''
+			args['last_message'] = id
+		query += ''' GROUP BY Message.id, Message.content, User.name
+					ORDER BY Message.id desc
+					LIMIT 10'''
+		query = 'SELECT * FROM (' + query + ') order by id'
+		# print("--------------",query, args)
 		return db.engine.execute(query,args)
 	def get_users(self):
 		return db.engine.execute('''SELECT User.*, ChannelUser.role AS role

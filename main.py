@@ -143,8 +143,9 @@ def chats(id):
     if request.method == 'POST':
         keyword = request.form['keyword']
         sender = request.form['sender']
+        last_message = request.form.get('last_message')
         channel = Channel.query.get(id)
-        chats = [dict(i) for i in channel.get_messages(keyword = keyword, sender = sender)]
+        chats = [dict(i) for i in channel.get_messages(keyword = keyword, sender = sender, id = last_message)]
         return jsonify({
             'chats' : chats
     })
