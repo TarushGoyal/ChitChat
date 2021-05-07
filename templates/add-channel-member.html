@@ -1,0 +1,24 @@
+{% extends "base2.html" %}
+
+{% block content %}
+
+</div>
+
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/add-channel-member.css') }}">
+
+<h1 class="title"> Add Member to : {{ channel.name }} </h1>
+
+<div id="content">
+  {% for u in memberList:%}
+    <br>
+    <form class="text-form" action="/channel/{{channel.id}}/add/{{u.id}}" method="POST">
+        <a href="/user/{{u.id}}">{{u.name}}</a>
+        <input type="submit" value="Add"/>
+    </form>
+  {% endfor %}
+
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base2.html" %}
+
+{% block content %}
+
+</div>
+
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/create-bot.css') }}">
+
+<h1 class="title"> Create a new Bot, {{user_name}} </h1>
+
+<div id="content">
+  <div class="form-holder">
+      <form class="text-form" action="" method="POST">
+        <label>Bot Name:</label>
+        <input type="text" class="form-control" name="botName" placeholder="Enter Bot name"/><br><br>
+        <label> Enter action code: </label><br>
+        <label> Input: Bla </label><br>
+        <label> Output: Bla </label><br>
+        <textarea name="code" placeholder="Code here"></textarea><br>
+        <input type="submit" value="Create"/>
+      </form>
+  </div>
+
+</div>
+
+
+{% endblock %}
