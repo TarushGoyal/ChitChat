@@ -1,4 +1,4 @@
-from flask import session
+from flask import session, render_template
 from flask_socketio import emit, join_room, leave_room
 from . import socketIO
 from .models import Message, React, Channel, User
@@ -6,6 +6,7 @@ from . import db
 from flask_login import login_required, current_user
 from .bot import bot_msg
 import os
+from .decorators import *
 
 @socketIO.on('send chat', namespace = "/")
 @login_required
@@ -15,25 +16,19 @@ def chat(json, methods=['GET', 'POST']):
     json['user_name'] = current_user.name
     room = json['channel']
     reply_id = json['reply_id']
-    print(json)
     if not reply_id:
         msg = Message(content = json['message'], type = "text", posted_in = room, posted_by = current_user.id)
     else:
         msg = Message(content = json['message'], type = "text", posted_in = room,
                 posted_by = current_user.id, reply_to = reply_id)
-    print("message created successfuly---------------------------")
     bot_messages = bot_msg(msg, room)
     db.session.add(msg)
     db.session.commit()
-    print("message created successfuly---------------------------")
     for m in bot_messages:
         db.session.add(m)
-    print("message created successfuly---------------------------")
     db.session.commit()
-    print("message created successfuly---------------------------")
     json['id'] = msg.id
     json['posted_at'] = str(msg.posted_at)
-    print("message created successfuly---------------------------")
     msg_json = msg.__dict__
     del msg_json['_sa_instance_state']
     msg_json['posted_by_name'] = User.query.get(msg_json['posted_by']).name
@@ -104,10 +99,12 @@ def reacted(json):
 
 @socketIO.on('deleted', namespace='/')
 @login_required
-def reacted(json):
+def deleted(json):
     room = json['channel']
     message_id = json['message_id']
     message = Message.query.get(message_id)
+    if current_user.id != message.posted_by:
+        return
     message.deleted = 1;
     db.session.commit()
     emit('delete chat' , json, room = room)
