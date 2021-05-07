@@ -174,3 +174,21 @@ def add_server():
         return redirect(f'/server/{newServer.id}')
     else:
         return render_template('add-server.html', user_name = current_user.name)
+
+@main.route('/create-bot', methods = ['POST', 'GET'])
+@login_required
+def create_bot():
+    if request.method == 'POST':
+        bot_name = request.form.get('botName')
+        bot_user = User(name = bot_name)
+        db.session.add(bot_user)
+        db.session.commit()
+
+        snippet = request.form.get('code')
+        code = f'\ndef temp(read_msg, room):\n  read_content = read_msg.content\n  posted_by_name = User.query.get(read_msg.posted_by).name\n  messages = []\n{snippet}\n  assert type(messages) == list\n  return messages\nbot_send[{bot_user.id}] = temp'
+        with open('ChitChat/bot_actions.py', 'a') as f:
+            f.write(code)
+        return redirect(f'/home')
+    else:
+        return render_template('create-bot.html', user_name = current_user.name)
+

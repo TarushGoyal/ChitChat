@@ -110,6 +110,9 @@ class User(UserMixin, db.Model):
 	def get_all(cls):
 		return db.engine.execute('''SELECT * FROM User''')
 	@classmethod
+	def get_bots(cls):
+		return db.engine.execute('''SELECT id FROM User WHERE email IS NULL''')
+	@classmethod
 	def search_user(cls, s):
 		comp = '%' + s + '%'
 		return db.engine.execute('''SELECT * FROM User WHERE name LIKE :ss''', {'ss':comp})

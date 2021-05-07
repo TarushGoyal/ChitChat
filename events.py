@@ -4,6 +4,7 @@ from . import socketIO
 from .models import Message, React, Channel, User
 from . import db
 from flask_login import login_required, current_user
+from .bot import bot_msg
 import os
 
 @socketIO.on('send chat', namespace = "/")
@@ -14,15 +15,28 @@ def chat(json, methods=['GET', 'POST']):
     json['user_name'] = current_user.name
     room = json['channel']
     msg = Message(content = json['message'], type = "text", posted_in = room, posted_by = current_user.id)
+    bot_messages = bot_msg(msg, room)
+
     db.session.add(msg)
+    for m in bot_messages:
+        db.session.add(m)
     db.session.commit()
     json['id'] = msg.id
     json['posted_at'] = str(msg.posted_at)
+
     msg_json = msg.__dict__
     del msg_json['_sa_instance_state']
     msg_json['posted_by_name'] = User.query.get(msg_json['posted_by']).name
     msg_json['posted_at'] = str(msg_json['posted_at'])
     emit('add chat', msg_json, room = room)
+
+    for m in bot_messages:
+        m.posted_by # ??
+        msg_json = m.__dict__
+        del msg_json['_sa_instance_state']
+        msg_json['posted_by_name'] = User.query.get(msg_json['posted_by']).name
+        msg_json['posted_at'] = str(msg_json['posted_at'])
+        emit('add chat', msg_json, room = room)
 
 @socketIO.on('upload', namespace = "/")
 @login_required
