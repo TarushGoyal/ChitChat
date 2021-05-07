@@ -134,14 +134,14 @@ class Server(db.Model):
 									FROM User INNER JOIN ServerUser
 									ON ServerUser.server_id = :id AND ServerUser.user_id = User.id''',
 									{'id':self.id})
-    def get_users_not_in(self, chan_id):
-    	return db.engine.execute('''SELECT User.*
-    								FROM User
-    									INNER JOIN ServerUser ON ServerUser.server_id = :sid AND ServerUser.user_id = User.id
-    									INNER JOIN Channel ON Channel.server_id = :sid AND Channel.id = :cid
-    									LEFT OUTER JOIN ChannelUser ON ChannelUser.channel_id = :cid AND ChannelUser.user_id = User.id
-    								WHERE ChannelUser.channel_id IS NULL''',
-    								{'sid':self.id, 'cid':chan_id})
+	def get_users_not_in(self, chan_id):
+		return db.engine.execute('''SELECT User.*
+									FROM User
+										INNER JOIN ServerUser ON ServerUser.server_id = :sid AND ServerUser.user_id = User.id
+										INNER JOIN Channel ON Channel.server_id = :sid AND Channel.id = :cid
+										LEFT OUTER JOIN ChannelUser ON ChannelUser.channel_id = :cid AND ChannelUser.user_id = User.id
+									WHERE ChannelUser.channel_id IS NULL''',
+									{'sid':self.id, 'cid':chan_id})
 	def get_open_channels(self):
 		return db.engine.execute('''SELECT *
 									FROM Channel
@@ -260,9 +260,9 @@ class Channel(db.Model):
 		return db.engine.execute(query,args)
 	def get_users(self):
 		return db.engine.execute('''SELECT User.*, ChannelUser.role AS role
-    								FROM User INNER JOIN ChannelUser
-    								ON ChannelUser.channel_id = :id AND ChannelUser.user_id = User.id''',
-    								{'id':self.id})
+									FROM User INNER JOIN ChannelUser
+									ON ChannelUser.channel_id = :id AND ChannelUser.user_id = User.id''',
+									{'id':self.id})
 	def add_server_admins(self):
 		db.engine.execute('''INSERT INTO ChannelUser
 							 SELECT :cid , user_id
@@ -276,10 +276,10 @@ class Channel(db.Model):
 									ON Channel.server_id = Server.id AND Server.public''')
 
 class ChannelUser(db.Model):
-    __tablename__ = "ChannelUser"
-    channel_id = db.Column(db.Integer, db.ForeignKey('Channel.id'), primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True)
-    role = db.Column(db.String(20), nullable = False)		 # 'Creator', 'Admin', 'Participant', 'Spectator'
+	__tablename__ = "ChannelUser"
+	channel_id = db.Column(db.Integer, db.ForeignKey('Channel.id'), primary_key = True)
+	user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True)
+	role = db.Column(db.String(20), nullable = False)		 # 'Creator', 'Admin', 'Participant', 'Spectator'
 
 # class Message(db.Model):
 # 	__tablename__ = "Message"

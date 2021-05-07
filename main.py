@@ -247,7 +247,7 @@ def add_channel_member(id):
 @main.route('/channel/<cid>/add/<uid>', methods = ['POST'])
 @login_required
 def channel_add(cid, uid):
-    member = ChannelUser(channel_id = cid, user_id = uid)
+    member = ChannelUser(channel_id = cid, user_id = uid, role = 'Participant')
     db.session.add(member)
     db.session.commit()
     return redirect(f'/channel/{cid}/add-member')
