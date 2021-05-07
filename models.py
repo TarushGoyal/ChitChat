@@ -129,6 +129,12 @@ class Server(db.Model):
 									FROM Channel
 									WHERE Channel.server_id = :id''',
 									{'id':self.id})
+	def get_channels_for(self, user_id):
+		return db.engine.execute('''SELECT *
+									FROM Channel INNER JOIN ChannelUser
+										ON (Channel.id, :uid) = (ChannelUser.channel_id, ChannelUser.user_id)
+									WHERE Channel.server_id = :cid''',
+									{'cid':self.id, 'uid':user_id})
 	def get_users(self):
 		return db.engine.execute('''SELECT User.*, ServerUser.role as role
 									FROM User INNER JOIN ServerUser
