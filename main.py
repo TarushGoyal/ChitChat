@@ -6,7 +6,7 @@ from .models import *
 from werkzeug.utils import secure_filename
 import os
 import random, string
-
+from .decorators import *
 from . import db
 
 main = Blueprint('main', __name__)
@@ -71,6 +71,7 @@ def profile(id):
     return render_template('profile.html',user = user)
 
 @main.route('/updateDP', methods = ['POST'])
+@login_required
 def updateDP():
     if 'file' not in request.files:
         print("file argument missing in form data")
@@ -89,15 +90,16 @@ def updateDP():
     print("Error-----------------------")
     return redirect(url_for('main.profile', id = current_user.id))
 
-@main.route('/users')
-def users():
-	data = [i.id for i in User.get_all()]
-	return {
-		"data" : data
-	}
+# @main.route('/users')
+# def users():
+# 	data = [i.id for i in User.get_all()]
+# 	return {
+# 		"data" : data
+# 	}
 
 @main.route('/server/<id>')
 @login_required
+@server_member
 def server(id):
 	server = Server.query.get(id)
 	return render_template('server.html',server = server,
@@ -125,22 +127,24 @@ def chats(id):
             'chats' : chats
     })
 
-@main.route('/server/<id>/add-channel', methods = ['GET', 'POST'])
+@main.route('/server/<server_id>/add-channel', methods = ['GET', 'POST'])
 @login_required
-def add_channel(id):
+@server_admin
+def add_channel(server_id):
     if request.method == 'POST':
-        newChannel = Channel(name = request.form.get('channelName'), server_id = id)
+        newChannel = Channel(name = request.form.get('channelName'), server_id = server_id)
         db.session.add(newChannel)
         db.session.commit()
-        return redirect(f'/server/{id}')
+        return redirect(f'/server/{server_id}')
     else:
         server = Server.query.get(id)
         return render_template('add-channel.html', server = server)
 
-@main.route('/server/<id>/add-member', methods = ['GET', 'POST'])
+@main.route('/server/<server_id>/add-member', methods = ['GET', 'POST'])
 @login_required
-def add_server_member(id):
-    server = Server.query.get(id)
+@server_admin
+def add_server_member(server_id):
+    server = Server.query.get(server_id)
     matchList = []
 
     if request.method == 'POST':
@@ -149,14 +153,14 @@ def add_server_member(id):
 
     return render_template('add-server-member.html', server = server, matchList = matchList)
 
-@main.route('/server/<sid>/invite/<uid>', methods = ['POST'])
+@main.route('/server/<server_id>/invite/<uid>', methods = ['POST'])
 @login_required
-def send_invite(sid, uid):
-    invite = Invitation(server_id = sid, user_id = uid, description = request.form.get('inviteMsg'))
+@server_admin
+def send_invite(server_id, uid):
+    invite = Invitation(server_id = server_id, user_id = uid, description = request.form.get('inviteMsg'))
     db.session.add(invite)
     db.session.commit()
-    print(sid,uid)
-    return redirect(f'/server/{sid}/add-member')
+    return redirect(f'/server/{server_id}/add-member')
 
 @main.route('/accept-invite/<id>', methods = ['POST'])
 @login_required
@@ -254,6 +258,7 @@ def channel_add(cid, uid):
 
 @main.route('/server/<server_id>/promote/<user_id>',methods = ['POST'])
 @login_required
+@server_admin
 def promote(server_id, user_id):
     server_user = ServerUser.query.get((server_id,user_id))
     server_user.promote()
@@ -261,6 +266,7 @@ def promote(server_id, user_id):
 
 @main.route('/server/<server_id>/demote/<user_id>',methods = ['POST'])
 @login_required
+@server_admin
 def demote(server_id, user_id):
     server_user = ServerUser.query.get((server_id,user_id))
     server_user.demote()
@@ -268,6 +274,7 @@ def demote(server_id, user_id):
 
 @main.route('/server/<server_id>/kick/<user_id>',methods = ['POST'])
 @login_required
+@server_admin
 def kick(server_id, user_id):
     server_user = ServerUser.query.get((server_id,user_id))
     server_user.kick()

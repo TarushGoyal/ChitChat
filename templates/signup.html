@@ -3,8 +3,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="column is-4 is-offset-4">
-    <h3 class="title">Sign Up</h3>
+
+<style media="screen">
+body {
+  background-color: #D6E5ED;
+}
+</style>
+
+<div>
+    <center>
+    <h1 class="title">Sign Up</h1>
     <div class="box">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -13,7 +21,7 @@
             </div>
         {% endif %}
         {% endwith %}
-        <form method="POST" action="/signup">
+        <form class="auth-form" method="POST" action="/signup">
             <div class="field">
                 <div class="control">
                     <input class="input is-large" type="email" name="email" placeholder="Email" autofocus="">
@@ -35,5 +43,6 @@
             <button class="button is-block is-info is-large is-fullwidth">Sign Up</button>
         </form>
     </div>
+    </center>
 </div>
 {% endblock %}
