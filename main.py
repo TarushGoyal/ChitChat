@@ -68,7 +68,11 @@ def home():
 @login_required
 def profile(id):
     user = User.query.get(id)
-    return render_template('profile.html',user = user)
+    if user.is_bot:
+        bot_user = Bot.query.get(id)
+        return render_template('profile_bot.html',user = user, bot_user = bot_user, creator_name = User.query.get(bot_user.creator).name)
+    else:
+        return render_template('profile.html',user = user)
 
 @main.route('/editprofile', methods = ['POST'])
 @login_required
@@ -255,11 +259,12 @@ def create_bot():
         db.session.add(bot_user)
         db.session.flush()
 
-        bot_bot = Bot(id = bot_user.id, creator = current_user.id)
+        snippet = request.form.get('code')
+
+        bot_bot = Bot(id = bot_user.id, creator = current_user.id, code = snippet)
         db.session.add(bot_bot)
         db.session.commit()
 
-        snippet = request.form.get('code')
         code = f'\ndef temp(read_msg, room):\n  read_content = read_msg.content\n  posted_by = User.query.get(read_msg.posted_by).name\n  get_messages = Channel.query.get(room).get_messages\n  kick = kick_from_channel(room, {bot_user.id}, read_msg.posted_by)\n  messages = []\n{snippet}\n  assert type(messages) == list\n  return messages\nbot_send[{bot_user.id}] = temp\n'
 
         try:
@@ -366,5 +371,7 @@ def kick_channel(channel_id, user_id):
 @login_required
 def leave_server(server_id):
     server_user = ServerUser.query.get((server_id, current_user.id))
+    if not server_user or server_user != 'Creator':
+        return render_template('error.html',error = "Can't leave a server if you created it or not in it :)")
     server_user.kick()
     return redirect('/home')
