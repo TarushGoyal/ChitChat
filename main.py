@@ -209,10 +209,44 @@ def create_bot():
         db.session.commit()
 
         snippet = request.form.get('code')
-        code = f'\ndef temp(read_msg, room):\n  read_content = read_msg.content\n  posted_by_name = User.query.get(read_msg.posted_by).name\n  messages = []\n{snippet}\n  assert type(messages) == list\n  return messages\nbot_send[{bot_user.id}] = temp'
+        code = f'\ndef temp(read_msg, room):\n  read_content = read_msg.content\n  posted_by = User.query.get(read_msg.posted_by).name\n  get_messages = Channel.query.get(room).get_messages\n  messages = []\n{snippet}\n  assert type(messages) == list\n  return messages\nbot_send[{bot_user.id}] = temp\n'
+
+        try:
+            with open('ChitChat/bot_actions.py', 'x') as f:
+                f.write('from .models import Message, React, Channel, User\n\nbot_send = {}\n')
+        except:
+            pass
+
         with open('ChitChat/bot_actions.py', 'a') as f:
             f.write(code)
         return redirect(f'/home')
+
     else:
         return render_template('create-bot.html', user_name = current_user.name)
 
+@main.route('/search-users', methods = ['POST', 'GET'])
+@login_required
+def search_users():
+    matchList = []
+
+    if request.method == 'POST':
+        searchQuery = request.form.get('searchQuery')
+        matchList = User.search_user(searchQuery)
+
+    return render_template('search-users.html', matchList = matchList)
+
+@main.route('/channel/<id>/add-member', methods = ['GET'])
+@login_required
+def add_channel_member(id):
+    channel = Channel.query.get(id)
+    server = Server.query.get(channel.server_id)
+    memberList = server.get_users_not_in(id)
+    return render_template('add-channel-member.html', channel = channel, memberList = memberList)
+
+@main.route('/channel/<cid>/add/<uid>', methods = ['POST'])
+@login_required
+def channel_add(cid, uid):
+    member = ChannelUser(channel_id = cid, user_id = uid)
+    db.session.add(member)
+    db.session.commit()
+    return redirect(f'/channel/{cid}/add-member')

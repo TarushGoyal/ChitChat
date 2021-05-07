@@ -143,6 +143,14 @@ class Server(db.Model):
     								FROM User INNER JOIN ServerUser
     								ON ServerUser.server_id = :id AND ServerUser.user_id = User.id''',
     								{'id':self.id})
+    def get_users_not_in(self, chan_id):
+    	return db.engine.execute('''SELECT User.*
+    								FROM User
+    									INNER JOIN ServerUser ON ServerUser.server_id = :sid AND ServerUser.user_id = User.id
+    									INNER JOIN Channel ON Channel.server_id = :sid AND Channel.id = :cid
+    									LEFT OUTER JOIN ChannelUser ON ChannelUser.channel_id = :cid AND ChannelUser.user_id = User.id
+    								WHERE ChannelUser.channel_id IS NULL''',
+    								{'sid':self.id, 'cid':chan_id})
     @classmethod
     def get_public_servers(cls):
     	return db.engine.execute('''SELECT * FROM Server WHERE Server.public''')

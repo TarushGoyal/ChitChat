@@ -1,0 +1,28 @@
+{% extends "base2.html" %}
+
+{% block content %}
+
+</div>
+
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/search-users.css') }}">
+
+<h1 class="title"> Search Users </h1>
+
+<div id="content">
+  <div class="form-holder">
+      <form class="text-form" action="" method="POST">
+        <label>Enter User Name:</label>
+        <input type="text" class="form-control" name="searchQuery" placeholder="Search Users by entering name"/>
+        <input type="submit" value="Search"/>
+      </form>
+  </div>
+  {% for u in matchList:%}
+    <br>
+        <a href="/user/{{u.id}}">{{u.name}}</a> <br>
+  {% endfor %}
+
+
+</div>
+
+
+{% endblock %}
