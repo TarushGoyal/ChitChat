@@ -167,18 +167,19 @@ def add_server_member(server_id):
 @login_required
 @server_admin
 def send_invite(server_id, uid):
-    user = User.query.get(uid)
-    if user.is_bot:
-        member = ServerUser(server_id = server_id, user_id = uid, role = 'Member')
-        db.session.add(member)
-        open_channels = Server.query.get(server_id).get_open_channels()
-        for ch in open_channels:
-            member = ChannelUser(channel_id = ch.id, user_id = uid, role = 'Participant')
+    if ServerUser.query.get((server_id, uid)) is None:
+        user = User.query.get(uid)
+        if user.is_bot:
+            member = ServerUser(server_id = server_id, user_id = uid, role = 'Member')
             db.session.add(member)
-    else:
-        invite = Invitation(server_id = server_id, user_id = uid, description = request.form.get('inviteMsg'))
-        db.session.add(invite)
-    db.session.commit()
+            open_channels = Server.query.get(server_id).get_open_channels()
+            for ch in open_channels:
+                member = ChannelUser(channel_id = ch.id, user_id = uid, role = 'Participant')
+                db.session.add(member)
+        else:
+            invite = Invitation(server_id = server_id, user_id = uid, description = request.form.get('inviteMsg'))
+            db.session.add(invite)
+        db.session.commit()
     return redirect(f'/server/{server_id}/add-member')
 
 @main.route('/accept-invite/<id>', methods = ['POST'])
@@ -186,13 +187,14 @@ def send_invite(server_id, uid):
 def accept_invite(id):
     invite = Invitation.query.get(id)
     invite.accepted = True;
-    member = ServerUser(server_id = invite.server_id, user_id = invite.user_id, role = 'Member')
-    db.session.add(member)
-
-    open_channels = Server.query.get(invite.server_id).get_open_channels()
-    for ch in open_channels:
-        member = ChannelUser(channel_id = ch.id, user_id = invite.user_id, role = 'Participant')
+    if ServerUser.query.get((invite.server_id, invite.user_id)) is None:
+        member = ServerUser(server_id = invite.server_id, user_id = invite.user_id, role = 'Member')
         db.session.add(member)
+
+        open_channels = Server.query.get(invite.server_id).get_open_channels()
+        for ch in open_channels:
+            member = ChannelUser(channel_id = ch.id, user_id = invite.user_id, role = 'Participant')
+            db.session.add(member)
 
     db.session.commit()
     return redirect(f'/server/{invite.server_id}')
@@ -243,11 +245,11 @@ def create_bot():
         db.session.commit()
 
         snippet = request.form.get('code')
-        code = f'\ndef temp(read_msg, room):\n  read_content = read_msg.content\n  posted_by = User.query.get(read_msg.posted_by).name\n  get_messages = Channel.query.get(room).get_messages\n  messages = []\n{snippet}\n  assert type(messages) == list\n  return messages\nbot_send[{bot_user.id}] = temp\n'
+        code = f'\ndef temp(read_msg, room):\n  read_content = read_msg.content\n  posted_by = User.query.get(read_msg.posted_by).name\n  get_messages = Channel.query.get(room).get_messages\n  kick = kick_from_channel(room)\n  messages = []\n{snippet}\n  assert type(messages) == list\n  return messages\nbot_send[{bot_user.id}] = temp\n'
 
         try:
             with open('ChitChat/bot_actions.py', 'x') as f:
-                f.write('from .models import Message, React, Channel, User\n\nbot_send = {}\n')
+                f.write('from .models import Message, React, Channel, User\nfrom .bot_api import kick_from_channel\n\nbot_send = {}\n')
         except:
             pass
 

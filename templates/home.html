@@ -3,9 +3,14 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<a href="/search-users">Search Users</a>
+<br>
 <h1 class="title">
   Welcome, {{ name }}!
 </h1>
+<a href="/user/{{current_user.id}}">My Profile</a>
+<br>
 <h2> Your Invitations are: </h2>
 <ul>
 {% for i in invites:%}
