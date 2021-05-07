@@ -32,8 +32,7 @@ def upload_file():
             flash('No selected file')
             return redirect(request.url)
         if file:
-            print("valid file")
-            filename = secure_filename(file.filename)
+            filename = file.filename
             basedir = os.path.abspath(os.path.dirname(__file__))
             folder = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
             os.mkdir(os.path.join(basedir,'./static/files',folder))
