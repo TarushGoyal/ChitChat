@@ -1,0 +1,71 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.DP {
+    display: block;
+    max-width:180px;
+    max-height:180px;
+    width: auto;
+    height: auto;
+    margin : 30px;
+}
+
+h2 {
+  margin : 30px;
+}
+table {
+  margin : 30px;
+}
+</style>
+
+<h1 class="title"> Welcome to profile of {{ user.name }} (Bot)! </h1>
+<img class="DP" src="{{ url_for('static', filename = 'DPs/' + user.DP)}}" alt="">
+
+<h2> ABOUT </h2>
+
+<table>
+  <tr>
+    <td> Name </td>
+    <td>
+        <input type="text" class="name" name="name" value="{{user.name}}" readonly=1>
+    </td>
+  </tr>
+  <tr>
+    <td> Creator </td>
+    <td> <a href="/user/{{bot_user.creator}}"><input type="text" class="creator" name="creator" value="{{creator_name}}" readonly=1></a> </td>
+  </tr>
+  <tr>
+    <td> Description </td>
+    <td> <input type="text" class="bio" name="bio" value="{{user.bio}}" readonly=1> </td>
+  </tr>
+  <tr>
+    <td> Creation Date </td>
+    <td> {{user.join_date}} </td>
+  </tr>
+  <tr>
+    <td> Action Code </td>
+    <td> <textarea readonly>{{bot_user.code}}</textarea> </td>
+  </tr>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript">
+    $('button#submit').hide();
+    var editable = 0;
+    $('button#edit').click(() => {
+        if (editable) {
+            location.reload();
+        }
+        else {
+          $('input').attr('readonly',false);
+          editable = 1;
+          $('button#edit').text('Cancel');
+          $('button#submit').show();
+        }
+    })
+</script>
+{% endblock %}
