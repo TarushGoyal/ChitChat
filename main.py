@@ -372,7 +372,7 @@ def kick_channel(channel_id, user_id):
 @login_required
 def leave_server(server_id):
     server_user = ServerUser.query.get((server_id, current_user.id))
-    if not server_user or server_user != 'Creator':
+    if not server_user or server_user.role == 'Creator':
         return render_template('error.html',error = "Can't leave a server if you created it or not in it :)")
     server_user.kick()
     return redirect('/home')
