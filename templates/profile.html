@@ -32,10 +32,14 @@ table {
 {% endif %}
 
 <h2> ABOUT </h2>
+
+<form ="POST" method="POST" action="/editprofile">
 <table>
   <tr>
     <td> Name </td>
-    <td> {{user.name}} </td>
+    <td>
+        <input type="text" class="name" name="name" value="{{user.name}}" readonly=1>
+    </td>
   </tr>
   <tr>
     <td> Email </td>
@@ -43,23 +47,37 @@ table {
   </tr>
   <tr>
     <td> Gender </td>
-    <td> {{user.gender}} </td>
+    <td> <input type="text" class="gender" name="gender" value="{{user.gender}}" readonly=1> </td>
   </tr>
   <tr>
     <td> Bio </td>
-    <td> {{user.bio}} </td>
+    <td> <input type="text" class="bio" name="bio" value="{{user.bio}}" readonly=1> </td>
+  </tr>
+  <tr>
+    <td> Join Date </td>
+    <td> {{user.join_date}} </td>
   </tr>
 </table>
-<!-- <h2> Your Invitations are: </h2>
-{% for i in invites:%}
-    <label>{{i.name}}</label> <br>
-    <form class="text-form" action="/accept-invite/{{i.id}}" method="POST">
-        <input type="submit" value="Accept"/>
-    </form>
-    <form class="text-form" action="/decline-invite/{{i.id}}" method="POST">
-        <input type="submit" value="Decline"/>
-    </form>
-    <br>
-{% endfor %} -->
+{% if current_user.id == user.id %}
+<button type="submit" id="submit"> Save Changes </button>
+{% endif %}
+</form>
+<button id="edit"> Edit </button>
 
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript">
+    $('button#submit').hide();
+    var editable = 0;
+    $('button#edit').click(() => {
+        if (editable) {
+            location.reload();
+        }
+        else {
+          $('input').attr('readonly',false);
+          editable = 1;
+          $('button#edit').text('Cancel');
+          $('button#submit').show();
+        }
+    })
+</script>
 {% endblock %}

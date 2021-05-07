@@ -66,9 +66,25 @@ def home():
     return render_template('home.html', name=current_user.name, servers=servers, invites=invites)
 
 @main.route('/user/<id>')
+@login_required
 def profile(id):
     user = User.query.get(id)
     return render_template('profile.html',user = user)
+
+@main.route('/editprofile', methods = ['POST'])
+@login_required
+def edit_profile():
+    print("edit profile called.......................")
+    name = request.form.get('name')
+    gender = request.form.get('gender')
+    bio = request.form.get('bio')
+    current_user.name = name
+    current_user.gender = gender
+    current_user.bio = bio
+    db.session.commit()
+    print("editing.......................")
+    print('/user/'+str(current_user.id))
+    return redirect('/user/'+str(current_user.id))
 
 @main.route('/updateDP', methods = ['POST'])
 @login_required
