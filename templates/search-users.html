@@ -1,11 +1,31 @@
 {% extends "base2.html" %}
 
 {% block content %}
-
 </div>
 
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/search-users.css') }}">
 
+<style media="screen">
+  .main {
+      background-color: #D6E5ED;
+      width : 50%;
+      padding : 10px;
+      margin : 30px;
+      border-radius: 20px;
+  }
+  .result {
+      background-color: #ACDE84;
+      padding : 10px;
+      margin : 10px;
+      border-radius: 5px;
+  }
+  body {
+      background-color: #F19898;
+  }
+</style>
+
+<center>
+<div class="main">
 <h1 class="title"> Search Users </h1>
 
 <div id="content">
@@ -17,9 +37,12 @@
       </form>
   </div>
   {% for u in matchList:%}
-    <br>
-        <a href="/user/{{u.id}}">{{u.name}}</a> <br>
+        <div class="result">
+          <a href="/user/{{u.id}}">{{u.name}}</a> <br>
+        </div>
   {% endfor %}
+</div>
+</center>
 
 
 </div>

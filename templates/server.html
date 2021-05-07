@@ -4,6 +4,19 @@
 
 </div>
 
+<style media="screen">
+    body {
+      background-color: #F19898;
+    }
+    .add-leave {
+      padding : 20px;
+      margin : 30px;
+      background-color: #F1EDC6;
+      display: inline;
+      border-radius: 10px;
+    }
+</style>
+
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/server.css') }}">
 
 <h1 class="title"> Welcome to Server : {{ server.name }}! </h1>
@@ -16,7 +29,7 @@
               <a href="/user/{{i.id}}">
                   {{i.name}}
               </a>
-              <p class="member-role"> {{ i.role }} </p>
+                <i><p class="member-role"> ({{ i.role }}) </p></i>
               <div class="member-control">
                 <form class="member-control-form" action="./{{server.id}}/promote/{{i.id}}" method="POST">
                     <button class="member-control-button" type="submit" name="button">⬆️</button>
@@ -30,12 +43,15 @@
               </div>
             </div>
         {% endfor %}
-        <div class="member-holder">
+        <br>
+        <center>
+        <div class="add-leave">
           <a href="./{{server.id}}/add-member"> Add </a>
         </div>
-        <div class="member-holder">
+        <div class="add-leave">
           <a href="./{{server.id}}/leave"> Leave </a>
         </div>
+        </center>
 
     </div>
     <div class="rightcolumn">

@@ -1,10 +1,18 @@
 {% extends "base2.html" %}
 
 {% block content %}
-
+<a href="/server/{{channel.server_id}}" class="navbar-item">
+      Server Page
+</a>
 </div>
 
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/channel.css') }}">
+
+<style media="screen">
+    body {
+        background-color: #F19898;
+    }
+</style>
 
 <h1 class="title"> Welcome to Channel : {{ channel.name }}! </h1>
 

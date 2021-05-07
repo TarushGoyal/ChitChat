@@ -6,6 +6,28 @@
 
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/add-server-member.css') }}">
 
+<style media="screen">
+  .main {
+      background-color: #D6E5ED;
+      width : 50%;
+      padding : 10px;
+      margin : 30px;
+      border-radius: 20px;
+  }
+  .result {
+      background-color: #ACDE84;
+      padding : 10px;
+      margin : 10px;
+      border-radius: 5px;
+  }
+  body {
+      background-color: #F19898;
+  }
+</style>
+
+<center>
+  <div class="main">
+<a href="/server/{{server.id}}">&lt-Back to server</a>
 <h1 class="title"> Add Member to : {{ server.name }} </h1>
 
 <div id="content">
@@ -18,14 +40,17 @@
   </div>
   {% for u in matchList:%}
     <br>
+    <div class="result">
     <form class="text-form" action="/server/{{server.id}}/invite/{{u.id}}" method="POST">
-        <label>{{u.name}}</label> <br>
+        <h4>{{u.name}}</h4>
         <label>Type an invite message:</label>
         <input type="text" class="form-control" name="inviteMsg" placeholder="Enter message"/>
         <input type="submit" value="Invite"/>
     </form>
+    </div>
   {% endfor %}
-
+</div>
+</center>
 
 </div>
 

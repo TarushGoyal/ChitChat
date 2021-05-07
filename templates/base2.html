@@ -8,6 +8,14 @@
 
 <body>
 
+<style media="screen">
+  .right {
+      float : right;
+      margin : 0;
+      padding : 0;
+  }
+</style>
+
 <div class="topbar">
       <a href="{{ url_for('main.home') }}" class="navbar-item">
           Home
@@ -18,6 +26,10 @@
             </a>
             <a href="{{ url_for('auth.signup') }}" class="navbar-item">
                 Sign Up
+            </a>
+      {% else %}
+            <a class="right" href="{{ url_for('main.profile', id = current_user.id) }}" class="navbar-item">
+                Hemlo {{ current_user.name }}
             </a>
       {% endif %}
       <a href="/search-users">Search Users</a>
