@@ -1,8 +1,24 @@
+.reply_id {
+  display: none;
+}
+
+#spacer {
+  height : 100px;
+}
+
+.reply-holder {
+  width : 50%;
+  background-color: #86959D;
+  /* border-radius: 10px; */
+  padding: 5px;
+  margin : 15px;
+}
+
 .rightcolumn {
-  float: left;
+   float: left;
    width: 70%;
    background: blue;
-   height: 90%;
+   height: 100%;
    overflow: auto;
    box-sizing: border-box;
    padding: 0.4em;
@@ -21,7 +37,13 @@
   margin : 10px;
 }
 
-.text-form input[type=text]{
+.form-holder {
+  position : fixed;
+  bottom : 20px;
+  right: 20px;
+}
+
+/* .text-form input[type=text]{
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
@@ -31,9 +53,9 @@
   bottom : 0;
   right : 14%;
   width : 56%;
-}
+} */
 
-.text-form input[type=submit] {
+/* .text-form input[type=submit] {
   background-color: #4CAF50;
   color: white;
   padding: 14px 20px;
@@ -44,7 +66,7 @@
   bottom : 0;
   right : 7%;
   width : 7%;
-}
+} */
 
 .file-form {
   display : none;
@@ -126,6 +148,19 @@ display: inline;
   display : block-inline;
 }
 
+.switch-tab{
+  position : absolute;
+  bottom : 30px;
+}
+
 #switch-text-button {
-  visibility : none;
+  display : inline;
+}
+
+#switch-file-button {
+  display : inline;
+}
+
+#switch-search-button {
+  display : inline;
 }

@@ -23,15 +23,23 @@
               </div>
             </div>
         {% endfor %}
+        <div class="switch-tab">
+          <button id="switch-text-button" type="button" name="button"> Type Text </button>
+          <button id="switch-file-button" type="button" name="button"> Upload File </button>
+          <button id="switch-search-button" type="button" name="button"> Search Messages </button>
+        </div>
     </div>
     <div class="rightcolumn">
         <h2> Chats </h2>
 
         <div class="message_holder">
         </div>
+        <div id="spacer">
+        </div>
     </div>
     <div class="form-holder">
       <form class="text-form" action="" method="POST">
+        <input type="number" class="reply_id">
         <input type="text" class="message" placeholder="type your message here"/>
         <input type="submit"/>
       </form>
@@ -46,13 +54,9 @@
         <input type="text" id="sender" name="sender" placeholder="all"/>
         <input type="submit"/>
       </form>
-      <button id="switch-text-button" type="button" name="button"> Type Text </button>
-      <button id="switch-file-button" type="button" name="button"> Upload File </button>
-      <button id="switch-search-button" type="button" name="button"> Search Messages </button>
     </div>
 
 </div>
-
 
   <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
@@ -67,19 +71,27 @@
           $('.text-form').show();
           $('.file-form').hide();
           $('.search-form').hide();
+          // switch_text_button.hide();
+          // switch_file_button.show();
+          // switch_search_button.show();
           mode = 0;
       });
       switch_file_button.click(() => {
           $('.text-form').hide();
           $('.file-form').show();
           $('.search-form').hide();
+          // switch_text_button.show();
+          // switch_file_button.hide();
+          // switch_search_button.show();
           mode = 1;
       });
       switch_search_button.click(() => {
           $('.text-form').hide();
           $('.file-form').hide();
           $('.search-form').show();
-          // $('.rightcolumn').height("70%");
+          // switch_text_button.show();
+          // switch_file_button.show();
+          // switch_search_button.hide();
           mode = 2;
       });
   </script>
