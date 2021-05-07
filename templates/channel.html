@@ -30,6 +30,9 @@
               </div>
             </div>
         {% endfor %}
+        <div class="member-holder">
+          <a href="./{{channel.id}}/add-member"> Add </a>
+        </div>
         {% if not role == 'Spectator' %}
         <div class="switch-tab">
           <button id="switch-text-button" type="button" name="button"> Type Text </button>
