@@ -102,7 +102,8 @@ def server(id):
 	server = Server.query.get(id)
 	return render_template('server.html',server = server,
                                          channels = server.get_channels(),
-                                         members = server.get_users())
+                                         members = server.get_users(),
+                                         )
 
 @main.route('/channel/<id>', methods = ['GET'])
 @login_required
@@ -250,3 +251,24 @@ def channel_add(cid, uid):
     db.session.add(member)
     db.session.commit()
     return redirect(f'/channel/{cid}/add-member')
+
+@main.route('/server/<server_id>/promote/<user_id>',methods = ['POST'])
+@login_required
+def promote(server_id, user_id):
+    server_user = ServerUser.query.get((server_id,user_id))
+    server_user.promote()
+    return redirect('/server/'+str(server_id))
+
+@main.route('/server/<server_id>/demote/<user_id>',methods = ['POST'])
+@login_required
+def demote(server_id, user_id):
+    server_user = ServerUser.query.get((server_id,user_id))
+    server_user.demote()
+    return redirect('/server/'+str(server_id))
+
+@main.route('/server/<server_id>/kick/<user_id>',methods = ['POST'])
+@login_required
+def kick(server_id, user_id):
+    server_user = ServerUser.query.get((server_id,user_id))
+    server_user.kick()
+    return redirect('/server/'+str(server_id))
