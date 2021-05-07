@@ -340,9 +340,16 @@ class Message(db.Model):
 	reply_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
 	def delete_message(self):
 		self.deleted = True
+
 class React(db.Model):
 	__tablename__ = "React"
 	id = db.Column(db.Integer, primary_key=True)
 	react_type = db.Column(db.String(10))
 	reacted_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
 	reacted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+
+class Bot(db.Model):
+	__tablename__ = "Bot"
+	id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key=True)
+	creator = db.Column(db.Integer, db.ForeignKey('User.id'))
+	code = db.Column(db.String(10000))
