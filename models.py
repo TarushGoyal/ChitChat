@@ -94,6 +94,8 @@ class User(UserMixin, db.Model):
 	gender = db.Column(db.String(10), default = "unknown")
 	bio = db.Column(db.String(100), default = "Hemlo there I am using Hemlo")
 	join_date = db.Column(db.DateTime, server_default = db.func.now())
+	is_bot = db.Column(db.Boolean, default = False)
+
 	def get_servers(self):
 		return Server.query.join(ServerUser).filter(ServerUser.user_id == self.id).all()
 	def get_invites(self):
@@ -269,6 +271,12 @@ class Channel(db.Model):
 									FROM User INNER JOIN ChannelUser
 									ON ChannelUser.channel_id = :id AND ChannelUser.user_id = User.id''',
 									{'id':self.id})
+	def get_bots(self):
+		return db.engine.execute('''SELECT User.*, ChannelUser.role AS role
+									FROM User INNER JOIN ChannelUser
+									ON ChannelUser.channel_id = :id AND ChannelUser.user_id = User.id
+									WHERE User.is_bot = 1''',
+									{'id':self.id})
 	def add_server_admins(self):
 		db.engine.execute('''INSERT INTO ChannelUser
 							 SELECT :cid , user_id
@@ -332,9 +340,16 @@ class Message(db.Model):
 	reply_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
 	def delete_message(self):
 		self.deleted = True
+
 class React(db.Model):
 	__tablename__ = "React"
 	id = db.Column(db.Integer, primary_key=True)
 	react_type = db.Column(db.String(10))
 	reacted_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
 	reacted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+
+class Bot(db.Model):
+	__tablename__ = "Bot"
+	id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key=True)
+	creator = db.Column(db.Integer, db.ForeignKey('User.id'))
+	code = db.Column(db.String(10000))

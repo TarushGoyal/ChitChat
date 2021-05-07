@@ -183,8 +183,17 @@ def add_server_member(server_id):
 @login_required
 @server_admin
 def send_invite(server_id, uid):
-    invite = Invitation(server_id = server_id, user_id = uid, description = request.form.get('inviteMsg'))
-    db.session.add(invite)
+    user = User.query.get(uid)
+    if user.is_bot:
+        member = ServerUser(server_id = server_id, user_id = uid, role = 'Member')
+        db.session.add(member)
+        open_channels = Server.query.get(server_id).get_open_channels()
+        for ch in open_channels:
+            member = ChannelUser(channel_id = ch.id, user_id = uid, role = 'Participant')
+            db.session.add(member)
+    else:
+        invite = Invitation(server_id = server_id, user_id = uid, description = request.form.get('inviteMsg'))
+        db.session.add(invite)
     db.session.commit()
     return redirect(f'/server/{server_id}/add-member')
 
@@ -241,8 +250,12 @@ def add_server():
 def create_bot():
     if request.method == 'POST':
         bot_name = request.form.get('botName')
-        bot_user = User(name = bot_name)
+        bot_user = User(name = bot_name, is_bot = True, bio = request.form.get('botDesc'))
         db.session.add(bot_user)
+        db.session.flush()
+
+        bot_bot = Bot(id = bot_user.id, creator = current_user.id)
+        db.session.add(bot_bot)
         db.session.commit()
 
         snippet = request.form.get('code')
