@@ -129,6 +129,12 @@ class Server(db.Model):
 									FROM Channel
 									WHERE Channel.server_id = :id''',
 									{'id':self.id})
+	def get_channels_for(self, user_id):
+		return db.engine.execute('''SELECT *
+									FROM Channel INNER JOIN ChannelUser
+										ON (Channel.id, :uid) = (ChannelUser.channel_id, ChannelUser.user_id)
+									WHERE Channel.server_id = :cid''',
+									{'cid':self.id, 'uid':user_id})
 	def get_users(self):
 		return db.engine.execute('''SELECT User.*, ServerUser.role as role
 									FROM User INNER JOIN ServerUser
@@ -280,18 +286,37 @@ class ChannelUser(db.Model):
 	channel_id = db.Column(db.Integer, db.ForeignKey('Channel.id'), primary_key = True)
 	user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key = True)
 	role = db.Column(db.String(20), nullable = False)		 # 'Creator', 'Admin', 'Participant', 'Spectator'
-
-# class Message(db.Model):
-# 	__tablename__ = "Message"
-# 	id = db.Column(db.Integer, primary_key=True)
-# 	content = db.Column(db.String(10000))
-# 	posted_at = db.Column(db.DateTime, server_default = db.func.now())
-# 	deleted = db.Column(db.Boolean)
-# 	posted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
-# 	posted_in = db.Column(db.Integer, db.ForeignKey('Channel.id'))
-# 	reply_to = db.Column(db.Integer, db.ForeignKey('Message.id'))
-# 	def delete_message(self):
-# 		self.deleted = True
+	def add_member(user_id, channel_id):
+		channel_user = ChannelUser(server_id = server_id, user_id = user_id, role = 'Participant')
+		db.session.add(channel_user)
+		db.session.commit()
+	def kick(self):
+		db.session.delete(self)
+		db.session.commit()
+	def promote(self):
+		if self.role == 'Spectator':
+			self.role = 'Participant'
+			db.session.commit()
+		elif self.role == 'Participant':
+			print("Attempting to promote Participant!!")
+		elif self.role == 'Admin':
+			print("Attempting to promote Admin!!")
+		elif self.role == 'Creator':
+			print("Attempting to promote Creator!!")
+		else:
+			print("Unknown Role in promote!!!")
+	def demote(self):
+		if self.role == 'Participant':
+			self.role = 'Spectator'
+			db.session.commit()
+		elif self.role == 'Spectator':
+			print("Attempting to demote Spectator!!")
+		elif self.role == 'Admin':
+			print("Attempting to demote Admin!!")
+		elif self.role == 'Creator':
+			print("Attempting to demote Creator!!")
+		else:
+			print("Unknown Role in demote!!!")
 
 class Message(db.Model):
 	__tablename__ = "Message"

@@ -27,3 +27,22 @@ def server_admin(f):
         else:
             return render_template("error.html", error = "You are not an admin of this server or have been demoted")
     return decorated_function
+
+def channel_member(f):
+    @wraps(f)
+    def decorated_function(channel_id, *args):
+        if ChannelUser.query.get((channel_id,current_user.id)):
+            return f(channel_id, *args)
+        else:
+            return render_template("error.html", error = "You are not a Participant of this channel or have been kicked out")
+    return decorated_function
+
+def channel_admin(f):
+    @wraps(f)
+    def decorated_function(channel_id, *args, **kwargs):
+        su = ChannelUser.query.get((channel_id, current_user.id))
+        if su and (su.role == 'Creator' or su.role == 'Admin'):
+            return f(channel_id, *args, **kwargs)
+        else:
+            return render_template("error.html", error = "You are not an admin of this channel or have been demoted")
+    return decorated_function

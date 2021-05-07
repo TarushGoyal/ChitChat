@@ -119,6 +119,14 @@ margin: 2px;
   float : right;
 }
 
+.member-role{
+  display : inline;
+}
+
+.member-control-form {
+  display : inline
+}
+
 .react-type {
 padding: 0;
 display: inline;

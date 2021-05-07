@@ -16,18 +16,27 @@
               <a href="/user/{{i.id}}">
                   {{i.name}}
               </a>
+              <p class="member-role"> {{ i.role }} </p>
               <div class="member-control">
-                  <button class="member-control-button" type="button" name="button">⬆️</button>
-                  <button class="member-control-button" type="button" name="button">⬇️</button>
-                  <button class="member-control-button" type="button" name="button">🦵</button>
+                <form class="member-control-form" action="./{{channel.id}}/promote/{{i.id}}" method="POST">
+                    <button class="member-control-button" type="submit" name="button">⬆️</button>
+                </form>
+                <form class="member-control-form" action="./{{channel.id}}/demote/{{i.id}}" method="POST">
+                    <button class="member-control-button" type="submit" name="button">⬇️</button>
+                </form>
+                <form class="member-control-form" action="./{{channel.id}}/kick/{{i.id}}" method="POST">
+                    <button class="member-control-button" type="submit" name="button">🦵</button>
+                </form>
               </div>
             </div>
         {% endfor %}
+        {% if not role == 'Spectator' %}
         <div class="switch-tab">
           <button id="switch-text-button" type="button" name="button"> Type Text </button>
           <button id="switch-file-button" type="button" name="button"> Upload File </button>
           <button id="switch-search-button" type="button" name="button"> Search Messages </button>
         </div>
+        {% endif %}
     </div>
     <div class="rightcolumn">
         <h2> Chats </h2>
@@ -37,6 +46,7 @@
         <div id="spacer">
         </div>
     </div>
+    {% if not role == 'Spectator' %}
     <div class="form-holder">
       <form class="text-form" action="" method="POST">
         <input type="number" class="reply_id">
@@ -55,6 +65,7 @@
         <input type="submit"/>
       </form>
     </div>
+    {% endif %}
 
 </div>
 
