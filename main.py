@@ -260,11 +260,11 @@ def create_bot():
         db.session.commit()
 
         snippet = request.form.get('code')
-        code = f'\ndef temp(read_msg, room):\n  read_content = read_msg.content\n  posted_by = User.query.get(read_msg.posted_by).name\n  get_messages = Channel.query.get(room).get_messages\n  kick = kick_from_channel(room)\n  messages = []\n{snippet}\n  assert type(messages) == list\n  return messages\nbot_send[{bot_user.id}] = temp\n'
+        code = f'\ndef temp(read_msg, room):\n  read_content = read_msg.content\n  posted_by = User.query.get(read_msg.posted_by).name\n  get_messages = Channel.query.get(room).get_messages\n  kick = kick_from_channel(room, {bot_user.id}, read_msg.posted_by)\n  messages = []\n{snippet}\n  assert type(messages) == list\n  return messages\nbot_send[{bot_user.id}] = temp\n'
 
         try:
             with open('ChitChat/bot_actions.py', 'x') as f:
-                f.write('from .models import Message, React, Channel, User\nfrom .bot_api import kick_from_channel\n\nbot_send = {}\n')
+                f.write('from .models import Message, React, Channel, User, ChannelUser\nfrom .bot_api import kick_from_channel\n\nbot_send = {}\n')
         except:
             pass
 
@@ -350,3 +350,10 @@ def kick_channel(channel_id, user_id):
     channel_user = ChannelUser.query.get((channel_id,user_id))
     channel_user.kick()
     return redirect('/channel/'+str(channel_id))
+
+@main.route('/server/<server_id>/leave', methods = ['GET'])
+@login_required
+def leave_server(server_id):
+    server_user = ServerUser.query.get((server_id, current_user.id))
+    server_user.kick()
+    return redirect('/home')
