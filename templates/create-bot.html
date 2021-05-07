@@ -6,6 +6,21 @@
 
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/create-bot.css') }}">
 
+<style media="screen">
+  .main {
+      background-color: #D6E5ED;
+      width : 50%;
+      padding : 10px;
+      margin : 30px;
+      border-radius: 20px;
+  }
+  body {
+      background-color: #F19898;
+  }
+</style>
+
+<center>
+  <div class="main">
 <h1 class="title"> Create a new Bot, {{user_name}} </h1>
 
 <div id="content">
@@ -22,6 +37,9 @@
         <input type="submit" value="Create"/>
       </form>
   </div>
+
+</div>
+</center>
 
 </div>
 
