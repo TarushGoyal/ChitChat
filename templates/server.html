@@ -16,10 +16,17 @@
               <a href="/user/{{i.id}}">
                   {{i.name}}
               </a>
+              <p class="member-role"> {{ i.role }} </p>
               <div class="member-control">
-                  <button class="member-control-button" type="button" name="button">⬆️</button>
-                  <button class="member-control-button" type="button" name="button">⬇️</button>
-                  <button class="member-control-button" type="button" name="button">🦵</button>
+                <form class="member-control-form" action="./{{server.id}}/promote/{{i.id}}" method="POST">
+                    <button class="member-control-button" type="submit" name="button">⬆️</button>
+                </form>
+                <form class="member-control-form" action="./{{server.id}}/demote/{{i.id}}" method="POST">
+                    <button class="member-control-button" type="submit" name="button">⬇️</button>
+                </form>
+                <form class="member-control-form" action="./{{server.id}}/kick/{{i.id}}" method="POST">
+                    <button class="member-control-button" type="submit" name="button">🦵</button>
+                </form>
               </div>
             </div>
         {% endfor %}

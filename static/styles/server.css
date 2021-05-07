@@ -34,6 +34,14 @@ margin: 2px;
   float : right;
 }
 
+.member-role{
+  display : inline;
+}
+
+.member-control-form {
+  display : inline
+}
+
 /*
 .timestamp {
   display: inline;
