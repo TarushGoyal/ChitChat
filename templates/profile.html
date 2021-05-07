@@ -62,7 +62,9 @@ table {
 <button type="submit" id="submit"> Save Changes </button>
 {% endif %}
 </form>
+{% if current_user.id == user.id %}
 <button id="edit"> Edit </button>
+{% endif %}
 
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script type="text/javascript">

@@ -298,6 +298,13 @@ def add_channel_member(channel_id):
 @login_required
 @channel_admin
 def channel_add(channel_id, uid):
+    channel = Channel.query.get(channel_id)
+    su = ServerUser.query.get((channel.server_id, uid))
+    if not su:
+        return render_template('error.html',error = "The user is not in the server!")
+    cu = ChannelUser.query.get((channel_id, uid))
+    if cu:
+        return render_template('error.html',error = "The user is already in the channel!")
     member = ChannelUser(channel_id = channel_id, user_id = uid, role = 'Participant')
     db.session.add(member)
     db.session.commit()
@@ -324,6 +331,8 @@ def demote(server_id, user_id):
 @server_admin
 def kick(server_id, user_id):
     server_user = ServerUser.query.get((server_id,user_id))
+    if not server_user:
+        return render_template('error.html',error = "Don't kick someone who is not in the server :/")
     server_user.kick()
     return redirect('/server/'+str(server_id))
 
@@ -348,6 +357,8 @@ def demote_channel(channel_id, user_id):
 @channel_admin
 def kick_channel(channel_id, user_id):
     channel_user = ChannelUser.query.get((channel_id,user_id))
+    if not channel_user:
+        return render_template('error.html',error = "Don't kick someone who is not in the channel :/")
     channel_user.kick()
     return redirect('/channel/'+str(channel_id))
 
